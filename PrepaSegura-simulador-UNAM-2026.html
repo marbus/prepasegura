@@ -1,0 +1,1204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>PrepaSegura — Simulador UNAM 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --azul: #003d7a;
+  --oro: #c8a84b;
+  --oro-claro: #f0d080;
+  --bg: #0a0f1e;
+  --bg2: #111827;
+  --bg3: #1a2235;
+  --verde: #22c55e;
+  --rojo: #ef4444;
+  --amarillo: #f59e0b;
+  --texto: #e8eaf0;
+  --gris: #8892a4;
+  --borde: #1e2d45;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--texto);
+  font-family: 'DM Mono', monospace;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* SCREENS */
+.screen { display:none; min-height:100vh; }
+.screen.active { display:flex; flex-direction:column; }
+
+/* HEADER */
+.hdr {
+  background: linear-gradient(135deg, #001830, #003d7a, #001830);
+  border-bottom: 2px solid var(--oro);
+  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky; top:0; z-index:100;
+}
+.hdr-logo {
+  display:flex; align-items:center; gap:12px;
+}
+.escudo {
+  width:44px; height:44px;
+  background: var(--oro);
+  border-radius:50%;
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif;
+  font-weight:800; font-size:13px;
+  color:#001830;
+  box-shadow: 0 0 16px rgba(200,168,75,0.5);
+  animation: glow 3s ease-in-out infinite;
+  flex-shrink:0;
+}
+@keyframes glow {
+  0%,100%{box-shadow:0 0 16px rgba(200,168,75,0.4);}
+  50%{box-shadow:0 0 30px rgba(200,168,75,0.8);}
+}
+.hdr h1 {
+  font-family:'Syne',sans-serif;
+  font-size:16px; font-weight:800;
+  color:#fff;
+}
+.hdr h1 span { color:var(--oro); }
+.hdr-sub { font-size:10px; color:var(--gris); }
+
+/* TIMER */
+.timer-box {
+  background: var(--bg3);
+  border: 1px solid var(--borde);
+  border-radius:8px;
+  padding:6px 12px;
+  text-align:center;
+  min-width:90px;
+}
+.timer-val {
+  font-family:'Syne',sans-serif;
+  font-size:18px; font-weight:800;
+  color: var(--verde);
+  letter-spacing:1px;
+  transition: color 0.5s;
+}
+.timer-label { font-size:9px; color:var(--gris); text-transform:uppercase; letter-spacing:1px; }
+
+/* MAIN CONTENT */
+.content {
+  flex:1;
+  max-width:680px;
+  width:100%;
+  margin:0 auto;
+  padding:24px 16px;
+}
+
+/* CARDS */
+.card {
+  background:var(--bg2);
+  border:1px solid var(--borde);
+  border-radius:16px;
+  padding:24px;
+  margin-bottom:20px;
+}
+.card-title {
+  font-family:'Syne',sans-serif;
+  font-size:17px; font-weight:800;
+  color:var(--oro-claro);
+  margin-bottom:6px;
+}
+.card-sub { font-size:12px; color:var(--gris); margin-bottom:20px; line-height:1.6; }
+
+/* FORM */
+label {
+  display:block;
+  font-size:10px; color:var(--gris);
+  text-transform:uppercase; letter-spacing:1px;
+  margin-bottom:6px; margin-top:14px;
+}
+input, select {
+  width:100%;
+  background:var(--bg3);
+  border:1px solid var(--borde);
+  border-radius:8px;
+  color:var(--texto);
+  font-family:'DM Mono',monospace;
+  font-size:14px;
+  padding:11px 14px;
+  outline:none;
+  transition:border-color 0.2s;
+  -webkit-appearance:none;
+}
+input:focus, select:focus { border-color:var(--oro); }
+input::placeholder { color:var(--gris); }
+
+.code-input {
+  font-family:'Syne',sans-serif;
+  font-size:20px; font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:4px;
+  text-align:center;
+  color:var(--oro);
+}
+
+/* BOTONES */
+.btn {
+  width:100%;
+  background:linear-gradient(135deg,var(--azul),#0056ae);
+  border:1px solid var(--oro);
+  color:var(--oro-claro);
+  font-family:'Syne',sans-serif;
+  font-size:14px; font-weight:700;
+  padding:14px;
+  border-radius:10px;
+  cursor:pointer;
+  letter-spacing:0.5px;
+  text-transform:uppercase;
+  transition:all 0.2s;
+  margin-top:20px;
+  display:block;
+}
+.btn:hover { box-shadow:0 4px 20px rgba(200,168,75,0.3); transform:translateY(-1px); }
+.btn:disabled { opacity:0.4; cursor:not-allowed; transform:none; }
+.btn-sm {
+  width:auto; display:inline-block;
+  padding:8px 20px; font-size:12px; margin-top:0;
+}
+.btn-ghost {
+  background:transparent;
+  border-color:var(--borde);
+  color:var(--gris);
+}
+
+/* OPCIONES PLANTEL */
+.plantel-opts {
+  display:grid; grid-template-columns:1fr 1fr;
+  gap:10px; margin-top:8px;
+}
+.plantel-opt {
+  background:var(--bg3);
+  border:2px solid var(--borde);
+  border-radius:10px;
+  padding:14px;
+  cursor:pointer;
+  transition:all 0.2s;
+  text-align:center;
+}
+.plantel-opt:hover { border-color:var(--oro); }
+.plantel-opt.selected {
+  border-color:var(--oro);
+  background:rgba(200,168,75,0.08);
+}
+.plantel-opt .num {
+  font-family:'Syne',sans-serif;
+  font-size:28px; font-weight:800;
+  display:block;
+}
+.plantel-opt.p9 .num { color:#60a5fa; }
+.plantel-opt.p3 .num { color:#a78bfa; }
+.plantel-opt .nombre { font-size:11px; color:var(--gris); margin-top:2px; }
+.plantel-opt .corte { font-size:10px; color:var(--oro); margin-top:4px; }
+
+/* CHECKBOX */
+.check-row {
+  display:flex; align-items:flex-start; gap:12px;
+  padding:12px; background:var(--bg3);
+  border-radius:8px; cursor:pointer; margin-top:14px;
+}
+.chk {
+  width:20px; height:20px; flex-shrink:0;
+  border:2px solid var(--borde);
+  border-radius:5px; margin-top:1px;
+  display:flex; align-items:center; justify-content:center;
+  transition:all 0.2s;
+}
+.chk.checked { background:rgba(34,197,94,0.2); border-color:#22c55e; color:#4ade80; font-size:12px; }
+.check-txt { font-size:12px; color:var(--gris); line-height:1.6; }
+
+/* MENSAJE ERROR/OK */
+.msg {
+  padding:10px 14px;
+  border-radius:8px;
+  font-size:12px;
+  margin-top:12px;
+  display:none;
+}
+.msg.error { background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#f87171; }
+.msg.ok { background:rgba(34,197,94,0.1); border:1px solid rgba(34,197,94,0.3); color:#4ade80; }
+.msg.show { display:block; }
+
+/* PROGRESS BAR EXAMEN */
+.progress-wrap {
+  background:var(--bg3);
+  border-bottom:1px solid var(--borde);
+  padding:10px 16px;
+}
+.progress-info {
+  display:flex; justify-content:space-between;
+  font-size:10px; color:var(--gris);
+  margin-bottom:6px;
+}
+.progress-bar {
+  height:4px; background:var(--bg2); border-radius:2px; overflow:hidden;
+}
+.progress-fill {
+  height:100%; border-radius:2px;
+  background:linear-gradient(90deg,var(--azul),var(--oro));
+  transition:width 0.3s;
+}
+
+/* AREA BADGE */
+.area-badge {
+  display:inline-flex; align-items:center; gap:6px;
+  background:var(--bg3);
+  border:1px solid var(--borde);
+  border-radius:20px;
+  padding:4px 12px;
+  font-size:11px; color:var(--oro);
+  margin-bottom:16px;
+  font-family:'Syne',sans-serif;
+  font-weight:600;
+}
+
+/* PREGUNTA */
+.pregunta-num {
+  font-size:11px; color:var(--gris);
+  text-transform:uppercase; letter-spacing:1px;
+  margin-bottom:8px;
+}
+.pregunta-txt {
+  font-size:15px; line-height:1.7;
+  color:var(--texto); margin-bottom:20px;
+}
+
+/* OPCIONES */
+.opciones { display:flex; flex-direction:column; gap:8px; }
+.opcion {
+  background:var(--bg3);
+  border:2px solid var(--borde);
+  border-radius:10px;
+  padding:12px 16px;
+  cursor:pointer;
+  transition:all 0.15s;
+  display:flex; align-items:center; gap:12px;
+  font-size:13px; line-height:1.5;
+}
+.opcion:hover { border-color:rgba(200,168,75,0.4); background:rgba(200,168,75,0.05); }
+.opcion.selected { border-color:var(--oro); background:rgba(200,168,75,0.1); }
+.opcion.correct { border-color:#22c55e; background:rgba(34,197,94,0.1); }
+.opcion.wrong { border-color:#ef4444; background:rgba(239,68,68,0.1); }
+.opcion-letra {
+  width:28px; height:28px; flex-shrink:0;
+  border-radius:50%; border:1px solid var(--borde);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Syne',sans-serif; font-size:12px; font-weight:700;
+  color:var(--gris);
+}
+.opcion.selected .opcion-letra { border-color:var(--oro); color:var(--oro); }
+
+/* NAV PREGUNTAS */
+.nav-preguntas {
+  display:flex; gap:6px; flex-wrap:wrap;
+  margin-bottom:20px;
+}
+.nav-q {
+  width:32px; height:32px;
+  border-radius:6px;
+  border:1px solid var(--borde);
+  background:var(--bg3);
+  color:var(--gris);
+  font-size:11px; font-weight:700;
+  cursor:pointer; transition:all 0.15s;
+  display:flex; align-items:center; justify-content:center;
+}
+.nav-q.respondida { background:rgba(34,197,94,0.15); border-color:rgba(34,197,94,0.4); color:#4ade80; }
+.nav-q.actual { border-color:var(--oro); color:var(--oro); background:rgba(200,168,75,0.1); }
+
+/* NAVEGACIÓN */
+.exam-nav {
+  display:flex; gap:10px; margin-top:20px;
+}
+.exam-nav .btn { margin-top:0; }
+
+/* RESULTADOS */
+.score-big {
+  text-align:center; padding:24px 0;
+}
+.score-num {
+  font-family:'Syne',sans-serif;
+  font-size:64px; font-weight:800;
+  color:var(--oro);
+  text-shadow:0 0 30px rgba(200,168,75,0.4);
+  line-height:1;
+}
+.score-total { font-size:18px; color:var(--gris); margin-top:4px; }
+
+.area-row {
+  display:flex; align-items:center; gap:10px;
+  padding:10px 0; border-bottom:1px solid var(--borde);
+}
+.area-nombre { width:130px; font-size:12px; flex-shrink:0; }
+.area-bar-wrap { flex:1; background:var(--bg3); border-radius:4px; height:8px; overflow:hidden; }
+.area-bar-fill { height:100%; border-radius:4px; transition:width 0.8s ease; }
+.area-pts { width:50px; text-align:right; font-family:'Syne',sans-serif; font-size:13px; font-weight:700; flex-shrink:0; }
+
+.plantel-resultado {
+  display:flex; align-items:center; justify-content:space-between;
+  padding:12px 16px;
+  border-radius:10px;
+  margin-bottom:8px;
+  border:1px solid var(--borde);
+}
+.plantel-resultado.ok { background:rgba(34,197,94,0.08); border-color:rgba(34,197,94,0.3); }
+.plantel-resultado.cerca { background:rgba(245,158,11,0.08); border-color:rgba(245,158,11,0.3); }
+.plantel-resultado.no { background:rgba(239,68,68,0.05); border-color:rgba(239,68,68,0.2); }
+
+/* FEEDBACK */
+textarea {
+  width:100%;
+  background:var(--bg3);
+  border:1px solid var(--borde);
+  border-radius:8px;
+  color:var(--texto);
+  font-family:'DM Mono',monospace;
+  font-size:13px;
+  padding:12px 14px;
+  outline:none;
+  resize:vertical;
+  min-height:100px;
+  transition:border-color 0.2s;
+}
+textarea:focus { border-color:var(--oro); }
+
+/* SENDING */
+.sending-overlay {
+  position:fixed; inset:0;
+  background:rgba(10,15,30,0.9);
+  display:none; align-items:center; justify-content:center;
+  z-index:999; flex-direction:column; gap:16px;
+}
+.sending-overlay.show { display:flex; }
+.spinner {
+  width:48px; height:48px;
+  border:3px solid var(--borde);
+  border-top-color:var(--oro);
+  border-radius:50%;
+  animation:spin 0.8s linear infinite;
+}
+@keyframes spin { to{transform:rotate(360deg);} }
+
+/* ALERTA TIEMPO */
+.alert-tiempo {
+  position:fixed; top:70px; left:50%; transform:translateX(-50%);
+  background:var(--rojo); color:#fff;
+  font-family:'Syne',sans-serif; font-size:13px; font-weight:700;
+  padding:8px 20px; border-radius:8px;
+  display:none; z-index:200;
+  animation:slideDown 0.3s ease;
+}
+@keyframes slideDown { from{top:50px;opacity:0;} to{top:70px;opacity:1;} }
+
+/* RESPONSIVE */
+@media(max-width:480px) {
+  .plantel-opts { grid-template-columns:1fr 1fr; }
+  .score-num { font-size:52px; }
+  .area-nombre { width:100px; font-size:11px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ALERTA TIEMPO -->
+<div class="alert-tiempo" id="alert-tiempo">⚠️ ¡10 minutos restantes!</div>
+
+<!-- SENDING OVERLAY -->
+<div class="sending-overlay" id="sending-overlay">
+  <div class="spinner"></div>
+  <div style="font-family:'Syne',sans-serif;font-size:14px;color:var(--oro);">Enviando resultados...</div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PANTALLA 1: CÓDIGO PROMOCIONAL -->
+<!-- ============================================================ -->
+<div id="s-codigo" class="screen active">
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="escudo">ENP</div>
+      <div>
+        <div class="hdr h1" style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;">Prepa<span style="color:var(--oro);">Segura</span></div>
+        <div class="hdr-sub">Simulador UNAM 2026 · CDMX</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-title">🎫 Código de acceso</div>
+      <div class="card-sub">Ingresa el código que te proporcionó tu asesor para acceder al simulador oficial ENP 2026.</div>
+
+      <label>Código promocional</label>
+      <input type="text" class="code-input" id="input-codigo" placeholder="XXXX0000" maxlength="12"
+             oninput="this.value=this.value.toUpperCase()" autocomplete="off" autocorrect="off" spellcheck="false">
+
+      <div class="msg" id="msg-codigo"></div>
+
+      <button class="btn" onclick="validarCodigo()">Validar código →</button>
+
+      <div style="margin-top:16px;text-align:center;font-size:11px;color:var(--gris);">
+        ¿No tienes código? Contacta a <strong style="color:var(--oro);">@PrepaSeguraBot</strong> en Telegram
+      </div>
+    </div>
+
+    <div style="text-align:center;font-size:10px;color:var(--gris);padding-bottom:20px;">
+      Examen basado en temario ECOEMS 2026 · 120 reactivos · 3 horas<br>
+      Cortes históricos ENP 2020–2025 integrados
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PANTALLA 2: REGISTRO -->
+<!-- ============================================================ -->
+<div id="s-registro" class="screen">
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="escudo">ENP</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;">Prepa<span style="color:var(--oro);">Segura</span></div>
+        <div class="hdr-sub">Registro de aspirante</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-title">👤 Datos del aspirante</div>
+      <div class="card-sub">Esta información se usa para personalizar tu resultado y enviarlo al asesor.</div>
+
+      <label>Nombre completo del alumno *</label>
+      <input type="text" id="reg-alumno" placeholder="Nombre completo" autocomplete="name">
+
+      <label>Nombre del tutor / responsable *</label>
+      <input type="text" id="reg-tutor" placeholder="Nombre del papá, mamá o tutor">
+
+      <label>WhatsApp del tutor *</label>
+      <input type="tel" id="reg-tel" placeholder="55 XXXX XXXX">
+
+      <label>Tu plantel objetivo *</label>
+      <div class="plantel-opts">
+        <div class="plantel-opt p9" id="opt-p9" onclick="selPlantel('P9')">
+          <span class="num">9</span>
+          <div class="nombre">Pedro de Alba</div>
+          <div class="corte">Corte 2024: 107 pts</div>
+        </div>
+        <div class="plantel-opt p3" id="opt-p3" onclick="selPlantel('P3')">
+          <span class="num">3</span>
+          <div class="nombre">Justo Sierra</div>
+          <div class="corte">Corte 2024: 102 pts</div>
+        </div>
+      </div>
+
+      <div class="check-row" id="check-compromiso" onclick="toggleCheck()">
+        <div class="chk" id="chk-icon"></div>
+        <div class="check-txt">Me comprometo a dar feedback honesto al finalizar el examen. Entiendo que esto ayuda a mejorar el simulador para futuros aspirantes. ✅</div>
+      </div>
+
+      <div class="msg" id="msg-registro"></div>
+      <button class="btn" onclick="iniciarExamen()">Comenzar examen →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PANTALLA 3: EXAMEN -->
+<!-- ============================================================ -->
+<div id="s-examen" class="screen">
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="escudo">ENP</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:15px;font-weight:800;color:#fff;" id="hdr-alumno-nombre">Aspirante</div>
+        <div class="hdr-sub" id="hdr-plantel-info">Meta: —</div>
+      </div>
+    </div>
+    <div class="timer-box">
+      <div class="timer-val" id="timer-display">3:00:00</div>
+      <div class="timer-label">tiempo</div>
+    </div>
+  </div>
+
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span id="prog-texto">Pregunta 1 de 120</span>
+      <span id="prog-resp">0 respondidas</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+
+  <div class="content">
+    <!-- NAV RÁPIDO -->
+    <div class="card" style="padding:16px;">
+      <div style="font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Navegación rápida</div>
+      <div class="nav-preguntas" id="nav-preguntas"></div>
+    </div>
+
+    <!-- PREGUNTA -->
+    <div class="card" id="card-pregunta">
+      <div class="area-badge" id="area-badge">📐 Área</div>
+      <div class="pregunta-num" id="pregunta-num">Pregunta 1</div>
+      <div class="pregunta-txt" id="pregunta-txt">Cargando...</div>
+      <div class="opciones" id="opciones-wrap"></div>
+
+      <div class="exam-nav">
+        <button class="btn btn-ghost btn-sm" onclick="navPregunta(-1)">← Anterior</button>
+        <button class="btn btn-sm" onclick="navPregunta(1)" id="btn-siguiente">Siguiente →</button>
+      </div>
+    </div>
+
+    <button class="btn" style="background:linear-gradient(135deg,#1a4a1a,#166534);border-color:#22c55e;color:#4ade80;"
+            onclick="confirmarFinalizar()">
+      ✓ Finalizar examen
+    </button>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PANTALLA 4: FEEDBACK -->
+<!-- ============================================================ -->
+<div id="s-feedback" class="screen">
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="escudo">ENP</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;">¡Examen <span style="color:var(--oro);">completado!</span></div>
+        <div class="hdr-sub">Un paso más para ver tu resultado</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+    <div class="card">
+      <div class="card-title">💬 Tu opinión importa</div>
+      <div class="card-sub">Comprometiste dar feedback. Es obligatorio para desbloquear tu resultado detallado. Sé honesto — esto mejora el simulador para miles de aspirantes.</div>
+
+      <label>¿Qué área te resultó más difícil y por qué?</label>
+      <textarea id="fb-dificil" placeholder="Ej: Química, especialmente balanceo de ecuaciones..."></textarea>
+
+      <label>¿El nivel de dificultad fue similar al examen real? (Si ya lo presentaste)</label>
+      <textarea id="fb-nivel" placeholder="Comparación con el examen real o tu percepción del nivel..."></textarea>
+
+      <label>¿Qué mejorarías del simulador?</label>
+      <textarea id="fb-mejora" placeholder="Sugerencias, errores encontrados, lo que sea..."></textarea>
+
+      <div class="msg" id="msg-feedback"></div>
+      <button class="btn" onclick="enviarResultados()">Ver mi resultado completo →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- PANTALLA 5: RESULTADOS -->
+<!-- ============================================================ -->
+<div id="s-resultados" class="screen">
+  <div class="hdr">
+    <div class="hdr-logo">
+      <div class="escudo">ENP</div>
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;">Tus <span style="color:var(--oro);">Resultados</span></div>
+        <div class="hdr-sub" id="res-subtitulo">Simulador UNAM 2026</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SCORE PRINCIPAL -->
+    <div class="card">
+      <div class="score-big">
+        <div class="score-num" id="res-score">—</div>
+        <div class="score-total">de 120 aciertos</div>
+        <div style="margin-top:12px;font-size:13px;color:var(--gris);" id="res-tiempo-usado"></div>
+      </div>
+    </div>
+
+    <!-- DESGLOSE POR ÁREA -->
+    <div class="card">
+      <div class="card-title">📊 Desglose por área</div>
+      <div id="res-areas" style="margin-top:8px;"></div>
+    </div>
+
+    <!-- PLANTELES -->
+    <div class="card">
+      <div class="card-title">🏫 Tu probabilidad por plantel</div>
+      <div id="res-planteles" style="margin-top:8px;"></div>
+    </div>
+
+    <!-- TIPS PERSONALIZADOS -->
+    <div class="card" id="res-tips-card">
+      <div class="card-title">💡 Áreas de oportunidad</div>
+      <div id="res-tips"></div>
+    </div>
+
+    <div style="text-align:center;padding:20px 0;font-size:12px;color:var(--gris);">
+      Resultado enviado a tu asesor via <strong style="color:var(--oro);">@PrepaSeguraBot</strong><br>
+      <span id="res-enviado-status"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ============================================================ -->
+<!-- JAVASCRIPT -->
+<!-- ============================================================ -->
+<script>
+// ============ CONFIGURACIÓN TELEGRAM ============
+const TG_TOKEN = '8795924117:AAH_Rexj8W7NHtUpajlCAicRYM8xBC3qI4k';
+const TG_CHATS = ['7337705861', '814061679'];
+
+async function sendTelegram(msg) {
+  for (const chatId of TG_CHATS) {
+    try {
+      await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
+        method: 'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({
+          chat_id: chatId,
+          text: msg,
+          parse_mode: 'HTML'
+        })
+      });
+    } catch(e) { console.log('TG error:', e); }
+  }
+}
+
+// ============ CÓDIGOS PROMOCIONALES ============
+const CODIGOS = {
+  'HACHI2026': { campaña:'Beta Hachi 🐾', activo:true, usos:5, plantel:'libre' },
+  'BETA01':    { campaña:'Beta Marzo',    activo:true, usos:10, plantel:'libre' },
+  'BETA02':    { campaña:'Beta Abril',    activo:true, usos:10, plantel:'libre' },
+  'ZOVA2026':  { campaña:'ZOVA VIP',      activo:true, usos:3,  plantel:'libre' },
+  'PREPA9':    { campaña:'Prepa 9 Focus', activo:true, usos:20, plantel:'P9' },
+  'PREPA3':    { campaña:'Prepa 3 Focus', activo:true, usos:20, plantel:'P3' },
+};
+const usosRegistrados = {};
+
+// ============ ESTADO GLOBAL ============
+let estado = {
+  codigo: '', campaña: '',
+  alumno: '', tutor: '', tel: '', plantel: '',
+  compromiso: false,
+  respuestas: {},
+  tiempoInicio: null,
+  tiempoUsado: 0,
+  preguntaActual: 0,
+  timerInterval: null,
+  segundosRestantes: 10800 // 3 horas
+};
+
+// ============ BANCO DE PREGUNTAS ============
+const PREGUNTAS = [
+  // MATEMÁTICAS (20)
+  {area:'Matemáticas',icono:'📐',texto:'Si f(x) = 3x² - 2x + 1, ¿cuál es el valor de f(3)?',ops:['22','28','20','25'],r:1},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuál es la solución del sistema: 2x + y = 7 y x - y = 2?',ops:['x=2, y=3','x=3, y=1','x=3, y=2','x=1, y=5'],r:1},
+  {area:'Matemáticas',icono:'📐',texto:'Simplifica: (x² - 4) ÷ (x - 2)',ops:['x + 2','x - 2','x² + 2','2x'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuál es la pendiente de la recta que pasa por (1,2) y (3,8)?',ops:['2','3','4','1'],r:1},
+  {area:'Matemáticas',icono:'📐',texto:'Una circunferencia tiene radio 5 cm. ¿Cuánto mide su área?',ops:['25π cm²','10π cm²','15π cm²','20π cm²'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuánto es log₂(32)?',ops:['4','5','6','3'],r:1},
+  {area:'Matemáticas',icono:'📐',texto:'Si sen(θ) = 3/5 en el primer cuadrante, ¿cuánto es cos(θ)?',ops:['4/5','3/4','5/4','2/5'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuál es el término general de la progresión aritmética 2, 5, 8, 11...?',ops:['3n - 1','3n + 1','2n + 1','n + 3'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'Resuelve: ∫2x dx',ops:['x² + C','2x² + C','x + C','2 + C'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuántos números naturales de 3 cifras son divisibles entre 5?',ops:['180','160','150','200'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'La probabilidad de sacar un 6 al lanzar un dado es:',ops:['1/6','1/3','1/2','2/6'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuánto mide la hipotenusa de un triángulo rectángulo con catetos 6 y 8?',ops:['10','12','14','9'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'Factoriza completamente: x² - 5x + 6',ops:['(x-2)(x-3)','(x+2)(x+3)','(x-1)(x-6)','(x-2)(x+3)'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'Si A = {1,2,3} y B = {2,3,4}, ¿cuál es A ∩ B?',ops:['{2,3}','{1,2,3,4}','{1,4}','{2}'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuál es el valor de (2³)² ?',ops:['64','32','16','128'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'La derivada de f(x) = x³ + 2x es:',ops:['3x² + 2','3x² + 2x','x² + 2','3x + 2'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuánto es √(144) + √(25)?',ops:['17','19','16','21'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'Si un triángulo tiene ángulos de 40° y 70°, ¿cuánto mide el tercero?',ops:['70°','60°','80°','50°'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuál es el mínimo de f(x) = x² - 4x + 7?',ops:['3','7','4','1'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'Un automóvil recorre 180 km en 2 horas. ¿Cuál es su velocidad promedio?',ops:['90 km/h','80 km/h','100 km/h','70 km/h'],r:0},
+
+  // ESPAÑOL (20)
+  {area:'Español',icono:'📖',texto:'¿Cuál de las siguientes oraciones tiene un complemento directo?',ops:['María corre rápido','Pedro compró un libro','Ana es inteligente','El cielo está nublado'],r:1},
+  {area:'Español',icono:'📖',texto:'Identifica la figura retórica: "Sus ojos son dos luceros"',ops:['Hipérbole','Metonimia','Metáfora','Símil'],r:2},
+  {area:'Español',icono:'📖',texto:'¿Qué tipo de narrador conoce los pensamientos de todos los personajes?',ops:['Primera persona','Testigo','Omnisciente','Protagonista'],r:2},
+  {area:'Español',icono:'📖',texto:'"El perro ladra" es un ejemplo de oración:',ops:['Compuesta','Simple','Yuxtapuesta','Coordinada'],r:1},
+  {area:'Español',icono:'📖',texto:'¿Qué función del lenguaje predomina en un poema lírico?',ops:['Referencial','Poética','Apelativa','Fática'],r:1},
+  {area:'Español',icono:'📖',texto:'La palabra "bicicleta" es:',ops:['Aguda','Esdrújula','Llana','Sobresdrújula'],r:2},
+  {area:'Español',icono:'📖',texto:'¿Cuál es el antónimo de "parsimonia"?',ops:['Lentitud','Precipitación','Calma','Prudencia'],r:1},
+  {area:'Español',icono:'📖',texto:'Un texto argumentativo tiene como propósito principal:',ops:['Narrar eventos','Describir lugares','Convencer o persuadir','Informar objetivamente'],r:2},
+  {area:'Español',icono:'📖',texto:'La coma se usa correctamente en:',ops:['"Vine, vi, vencí"','"El perro, ladra fuerte"','"María, es bonita"','"Hoy, llueve'],r:0},
+  {area:'Español',icono:'📖',texto:'¿Qué género literario incluye el cuento y la novela?',ops:['Lírico','Dramático','Narrativo','Épico'],r:2},
+  {area:'Español',icono:'📖',texto:'La palabra "deshacer" tiene el prefijo:',ops:['des-','de-','d-','desh-'],r:0},
+  {area:'Español',icono:'📖',texto:'En la oración "El maestro explicó la lección", el sujeto es:',ops:['explicó','la lección','El maestro','la'],r:2},
+  {area:'Español',icono:'📖',texto:'¿Qué tiempo verbal es "hubiera cantado"?',ops:['Pretérito imperfecto','Pretérito pluscuamperfecto de subjuntivo','Futuro compuesto','Condicional compuesto'],r:1},
+  {area:'Español',icono:'📖',texto:'"Muerto el perro, se acabó la rabia" es un ejemplo de:',ops:['Metáfora','Refrán','Hipérbole','Anáfora'],r:1},
+  {area:'Español',icono:'📖',texto:'La tesis en un texto argumentativo se ubica generalmente:',ops:['Al inicio o al final','Solo al final','En el desarrollo','En los ejemplos'],r:0},
+  {area:'Español',icono:'📖',texto:'¿Cuál de estos es un conector de causa?',ops:['Sin embargo','Por lo tanto','Porque','Además'],r:2},
+  {area:'Español',icono:'📖',texto:'La ironía consiste en:',ops:['Exagerar la realidad','Decir lo contrario de lo que se piensa','Comparar dos elementos','Repetir palabras'],r:1},
+  {area:'Español',icono:'📖',texto:'¿Qué elemento NO forma parte de la estructura del cuento clásico?',ops:['Nudo','Desenlace','Prólogo','Inicio'],r:2},
+  {area:'Español',icono:'📖',texto:'La palabra "televisión" es un ejemplo de:',ops:['Arcaísmo','Neologismo','Vulgarismo','Tecnicismo'],r:1},
+  {area:'Español',icono:'📖',texto:'"Corre, corre que te alcanzo" — la figura que se repite se llama:',ops:['Metáfora','Anáfora','Hipérbole','Elipsis'],r:1},
+
+  // FÍSICA (15)
+  {area:'Física',icono:'⚡',texto:'La unidad del Sistema Internacional para medir la fuerza es:',ops:['Joule','Newton','Pascal','Watt'],r:1},
+  {area:'Física',icono:'⚡',texto:'Un objeto cae libremente desde el reposo. A los 2 segundos, ¿cuál es su velocidad? (g = 10 m/s²)',ops:['10 m/s','20 m/s','40 m/s','5 m/s'],r:1},
+  {area:'Física',icono:'⚡',texto:'La primera ley de Newton (inercia) establece que:',ops:['F = ma','Un cuerpo en reposo permanece en reposo si no actúa sobre él una fuerza neta','Por cada acción hay una reacción igual y opuesta','El trabajo es fuerza por distancia'],r:1},
+  {area:'Física',icono:'⚡',texto:'¿Qué tipo de onda es el sonido?',ops:['Electromagnética transversal','Mecánica longitudinal','Mecánica transversal','Electromagnética longitudinal'],r:1},
+  {area:'Física',icono:'⚡',texto:'La velocidad de la luz en el vacío es aproximadamente:',ops:['300,000 km/s','30,000 km/s','3,000 km/s','3,000,000 km/s'],r:0},
+  {area:'Física',icono:'⚡',texto:'La ley de Ohm relaciona:',ops:['Presión, volumen y temperatura','Voltaje, corriente y resistencia','Masa, aceleración y fuerza','Energía, masa y velocidad'],r:1},
+  {area:'Física',icono:'⚡',texto:'El trabajo realizado por una fuerza de 10 N que desplaza un objeto 5 m es:',ops:['2 J','15 J','50 J','0.5 J'],r:2},
+  {area:'Física',icono:'⚡',texto:'¿Qué fenómeno explica por qué el cielo es azul?',ops:['Refracción','Dispersión','Difracción','Dispersión de Rayleigh'],r:3},
+  {area:'Física',icono:'⚡',texto:'La energía potencial gravitacional depende de:',ops:['Velocidad y masa','Masa, gravedad y altura','Solo de la altura','Fuerza y distancia'],r:1},
+  {area:'Física',icono:'⚡',texto:'¿Qué partícula subatómica tiene carga negativa?',ops:['Protón','Neutrón','Electrón','Positrón'],r:2},
+  {area:'Física',icono:'⚡',texto:'La frecuencia y el período de una onda son:',ops:['Directamente proporcionales','Inversamente proporcionales','Iguales','Independientes'],r:1},
+  {area:'Física',icono:'⚡',texto:'Un cuerpo se mueve con velocidad constante. Esto significa que:',ops:['Está acelerando','La fuerza neta sobre él es cero','Tiene mucha energía cinética','Está subiendo'],r:1},
+  {area:'Física',icono:'⚡',texto:'¿En qué se transforma la energía cinética de un auto al frenar?',ops:['Energía potencial','Energía nuclear','Calor (energía térmica)','Energía eléctrica'],r:2},
+  {area:'Física',icono:'⚡',texto:'La presión atmosférica estándar equivale a:',ops:['1 atm = 100 kPa','1 atm ≈ 101.3 kPa','1 atm = 760 Pa','1 atm = 1000 mbar'],r:1},
+  {area:'Física',icono:'⚡',texto:'Un generador eléctrico convierte:',ops:['Energía eléctrica en mecánica','Energía mecánica en eléctrica','Calor en electricidad','Luz en electricidad'],r:1},
+
+  // QUÍMICA (15)
+  {area:'Química',icono:'🧪',texto:'¿Cuál es la fórmula del agua oxigenada (peróxido de hidrógeno)?',ops:['H₂O','HO','H₂O₂','H₃O'],r:2},
+  {area:'Química',icono:'🧪',texto:'El número de Avogadro (6.022 × 10²³) representa:',ops:['El número de electrones en un átomo','El número de partículas en un mol','La masa de un mol en gramos','La velocidad de reacción'],r:1},
+  {area:'Química',icono:'🧪',texto:'En la tabla periódica, los halógenos se ubican en el grupo:',ops:['IA','IVA','VIIA','0 (gases nobles)'],r:2},
+  {area:'Química',icono:'🧪',texto:'Balancea: H₂ + O₂ → H₂O. ¿Cuál es la ecuación balanceada?',ops:['H₂ + O₂ → H₂O','2H₂ + O₂ → 2H₂O','H₂ + 2O₂ → 2H₂O','2H₂ + 2O₂ → 2H₂O'],r:1},
+  {area:'Química',icono:'🧪',texto:'¿Qué tipo de enlace se forma entre metales y no metales?',ops:['Covalente polar','Metálico','Iónico','Covalente apolar'],r:2},
+  {area:'Química',icono:'🧪',texto:'El pH de una solución ácida es:',ops:['Mayor a 7','Igual a 7','Menor a 7','Igual a 14'],r:2},
+  {area:'Química',icono:'🧪',texto:'¿Cuál es el símbolo del elemento Oro?',ops:['Or','Go','Au','Ag'],r:2},
+  {area:'Química',icono:'🧪',texto:'En una reacción de oxidación-reducción (redox), el agente oxidante:',ops:['Se oxida','Se reduce','Pierde electrones','No cambia'],r:1},
+  {area:'Química',icono:'🧪',texto:'La destilación sirve para separar mezclas basándose en:',ops:['Solubilidad','Punto de ebullición','Tamaño de partículas','Densidad'],r:1},
+  {area:'Química',icono:'🧪',texto:'¿Qué tipo de reacción produce calor?',ops:['Endotérmica','Exotérmica','Neutra','Catalítica'],r:1},
+  {area:'Química',icono:'🧪',texto:'El isótopo del carbono usado en datación radiactiva es:',ops:['C-12','C-13','C-14','C-11'],r:2},
+  {area:'Química',icono:'🧪',texto:'¿Cuántos electrones caben en el tercer nivel de energía?',ops:['2','8','18','32'],r:2},
+  {area:'Química',icono:'🧪',texto:'Una solución buffer (tampón) mantiene constante:',ops:['La temperatura','El pH','La concentración','El volumen'],r:1},
+  {area:'Química',icono:'🧪',texto:'El etanol (alcohol etílico) tiene la fórmula:',ops:['CH₃OH','C₂H₅OH','C₃H₇OH','CH₄'],r:1},
+  {area:'Química',icono:'🧪',texto:'La Ley de conservación de la masa establece que:',ops:['La energía no se crea ni se destruye','La masa de los reactivos es igual a la masa de los productos','Los gases ideales obedecen PV=nRT','Los metales conducen electricidad'],r:1},
+
+  // BIOLOGÍA (15)
+  {area:'Biología',icono:'🧬',texto:'¿En qué orgánulo celular se lleva a cabo la fotosíntesis?',ops:['Mitocondria','Ribosoma','Cloroplasto','Núcleo'],r:2},
+  {area:'Biología',icono:'🧬',texto:'El ADN tiene como bases nitrogenadas:',ops:['A, T, G, U','A, T, G, C','A, U, G, C','A, T, C, U'],r:1},
+  {area:'Biología',icono:'🧬',texto:'¿Cuál de los siguientes es un organismo procariota?',ops:['Hongo','Bacteria','Planta','Animal'],r:1},
+  {area:'Biología',icono:'🧬',texto:'La meiosis produce células con:',ops:['El mismo número de cromosomas que la célula madre','La mitad de cromosomas (haploides)','El doble de cromosomas','Tres juegos de cromosomas'],r:1},
+  {area:'Biología',icono:'🧬',texto:'¿Qué tipo de biomoléculas son la glucosa y el almidón?',ops:['Proteínas','Lípidos','Carbohidratos','Ácidos nucleicos'],r:2},
+  {area:'Biología',icono:'🧬',texto:'La selección natural fue propuesta por:',ops:['Gregor Mendel','Louis Pasteur','Charles Darwin','James Watson'],r:2},
+  {area:'Biología',icono:'🧬',texto:'El corazón humano tiene:',ops:['2 cámaras','3 cámaras','4 cámaras','6 cámaras'],r:2},
+  {area:'Biología',icono:'🧬',texto:'La respiración celular ocurre principalmente en:',ops:['El núcleo','Los ribosomas','La mitocondria','El retículo endoplásmico'],r:2},
+  {area:'Biología',icono:'🧬',texto:'¿Qué hormona regula el nivel de glucosa en sangre?',ops:['Adrenalina','Insulina','Tiroxina','Cortisol'],r:1},
+  {area:'Biología',icono:'🧬',texto:'En la cadena trófica, los productores son:',ops:['Animales carnívoros','Descomponedores','Plantas y algas','Herbívoros'],r:2},
+  {area:'Biología',icono:'🧬',texto:'La pared celular de las plantas está compuesta principalmente de:',ops:['Proteínas','Lípidos','Celulosa','Quitina'],r:2},
+  {area:'Biología',icono:'🧬',texto:'¿Cuántos pares de cromosomas tiene el ser humano?',ops:['23','46','44','22'],r:0},
+  {area:'Biología',icono:'🧬',texto:'El proceso por el cual las plantas pierden agua a través de las hojas se llama:',ops:['Fotosíntesis','Transpiración','Osmosis','Difusión'],r:1},
+  {area:'Biología',icono:'🧬',texto:'Un virus es considerado un ser vivo porque:',ops:['Tiene metabolismo propio','Puede reproducirse dentro de células huésped','Tiene membrana celular','Respira oxígeno'],r:1},
+  {area:'Biología',icono:'🧬',texto:'Las leyes de Mendel se relacionan con:',ops:['La evolución de las especies','La herencia genética','La estructura del ADN','La división celular'],r:1},
+
+  // HISTORIA (20)
+  {area:'Historia',icono:'🏛️',texto:'¿En qué año inició la Revolución Mexicana?',ops:['1900','1910','1920','1905'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'La Constitución Mexicana vigente fue promulgada en:',ops:['1857','1917','1910','1824'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'¿Quién fue el primer presidente de México?',ops:['Benito Juárez','Agustín de Iturbide','Guadalupe Victoria','Antonio López de Santa Anna'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'La Segunda Guerra Mundial terminó en:',ops:['1943','1944','1945','1946'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'¿Qué civilización construyó el Templo Mayor en Tenochtitlan?',ops:['Maya','Olmeca','Azteca (Mexica)','Tolteca'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'La Revolución Francesa inició en:',ops:['1776','1789','1799','1804'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'El Tratado de Guadalupe Hidalgo (1848) implicó que México:',ops:['Ganó Texas','Cedió más de la mitad de su territorio a EUA','Se independizó de España','Firmó la paz con Francia'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'¿Qué movimiento artístico-intelectual dominó Europa en el siglo XVIII?',ops:['Romanticismo','Renacimiento','Ilustración','Barroco'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'La ONU fue fundada después de:',ops:['La Primera Guerra Mundial','La Segunda Guerra Mundial','La Guerra Fría','La Guerra de Corea'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'¿Cuál fue la primera civilización de Mesoamérica?',ops:['Azteca','Maya','Olmeca','Teotihuacana'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'El Porfiriato (1876-1911) se caracterizó por:',ops:['Gran democracia y libertad de prensa','Largo gobierno de Porfirio Díaz con modernización y represión','Revolución social','Independencia de México'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'La Guerra Fría fue un conflicto entre:',ops:['México y EUA','URSS y China','EUA y la URSS','Europa y Asia'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'¿En qué año cayó el Muro de Berlín?',ops:['1985','1987','1989','1991'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'El movimiento estudiantil de 1968 en México culminó con:',ops:['Una gran reforma educativa','La masacre de Tlatelolco','La renuncia del presidente','Elecciones anticipadas'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'La Reforma de Juárez (Leyes de Reforma) buscaba principalmente:',ops:['Expulsar a los españoles','Separar la Iglesia del Estado','Industrializar México','Crear el ejército nacional'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'¿Quién llegó a América en 1492?',ops:['Américo Vespucio','Fernando de Magallanes','Cristóbal Colón','Hernán Cortés'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'La Revolución Industrial inició en:',ops:['Francia','Alemania','Inglaterra','Estados Unidos'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'El TLCAN (hoy T-MEC) es un acuerdo comercial entre:',ops:['México, Cuba y Venezuela','México, EUA y Canadá','México, EUA y Brasil','México, Centroamérica y EUA'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'La Independencia de México se consumó en:',ops:['1810','1813','1821','1824'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'¿Qué documento firmó Abraham Lincoln para abolir la esclavitud en EUA?',ops:['Declaración de Independencia','Proclamación de Emancipación','Constitución Americana','Carta Magna'],r:1},
+
+  // CIVISMO Y GEOGRAFÍA (15)
+  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Cuántos estados tiene la República Mexicana?',ops:['30','31','32','33'],r:2},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Cuál es el río más largo de México?',ops:['Balsas','Grijalva','Bravo','Usumacinta'],r:2},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'El Poder Judicial en México lo encabeza:',ops:['El Presidente','La Suprema Corte de Justicia de la Nación','El Senado','La Cámara de Diputados'],r:1},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Cuál es la capital de Brasil?',ops:['São Paulo','Río de Janeiro','Brasilia','Salvador'],r:2},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'¿En qué continente se encuentra Egipto?',ops:['Asia','Europa','América','África'],r:3},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'La CDMX está ubicada en la zona geográfica conocida como:',ops:['Valle de Oaxaca','Valle de México','Mesa del Norte','Llanura Costera'],r:1},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Cuántos artículos tiene la Constitución Política de los Estados Unidos Mexicanos?',ops:['100','136','200','120'],r:1},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'El sufragio universal en México otorga el derecho a votar a partir de los:',ops:['21 años','16 años','18 años','20 años'],r:2},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Qué tipo de clima predomina en el norte de México?',ops:['Tropical','Templado','Árido y semiárido','Polar'],r:2},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'El Senado de México está compuesto por:',ops:['500 senadores','300 senadores','128 senadores','200 senadores'],r:2},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'La corriente oceánica que influye en el clima de México por el Pacífico es:',ops:['Corriente del Golfo','Corriente de Humboldt','Corriente de California','Corriente de Labrador'],r:2},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Qué organización internacional vela por los derechos humanos a nivel mundial?',ops:['OCDE','OEA','ONU / ACNUDH','OMC'],r:2},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'La Sierra Madre Occidental recorre el territorio mexicano de:',ops:['Norte a Sur por el este','Norte a Sur por el oeste','Este a Oeste','De forma circular'],r:1},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Cuál es el volcán más alto de México?',ops:['Popocatépetl','Iztaccíhuatl','Pico de Orizaba (Citlaltépetl)','Nevado de Toluca'],r:2},
+  {area:'Civismo y Geografía',icono:'🌍',texto:'El artículo 3° de la Constitución Mexicana garantiza:',ops:['Derecho a la salud','Libertad de expresión','Derecho a la educación','Derecho al trabajo'],r:2},
+];
+
+// ============ TIMER ============
+function formatTime(s) {
+  const h = Math.floor(s/3600);
+  const m = Math.floor((s%3600)/60);
+  const sec = s%60;
+  return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function iniciarTimer() {
+  estado.timerInterval = setInterval(() => {
+    estado.segundosRestantes--;
+    const disp = document.getElementById('timer-display');
+    if (!disp) return;
+    disp.textContent = formatTime(estado.segundosRestantes);
+
+    if (estado.segundosRestantes <= 600 && estado.segundosRestantes > 599) {
+      disp.style.color = '#ef4444';
+      const alerta = document.getElementById('alert-tiempo');
+      alerta.style.display = 'block';
+      setTimeout(() => alerta.style.display = 'none', 4000);
+    } else if (estado.segundosRestantes <= 1800) {
+      disp.style.color = '#f59e0b';
+    }
+
+    if (estado.segundosRestantes <= 0) {
+      clearInterval(estado.timerInterval);
+      irAFeedback();
+    }
+  }, 1000);
+}
+
+// ============ VALIDAR CÓDIGO ============
+function validarCodigo() {
+  const codigo = document.getElementById('input-codigo').value.trim().toUpperCase();
+  const msg = document.getElementById('msg-codigo');
+
+  if (!codigo) {
+    mostrarMsg(msg, 'error', '⚠️ Ingresa un código de acceso.');
+    return;
+  }
+
+  const cfg = CODIGOS[codigo];
+  if (!cfg) {
+    mostrarMsg(msg, 'error', '❌ Código no válido. Verifica con tu asesor.');
+    return;
+  }
+  if (!cfg.activo) {
+    mostrarMsg(msg, 'error', '❌ Este código ha sido desactivado o expirado.');
+    return;
+  }
+  const usados = usosRegistrados[codigo] || 0;
+  if (usados >= cfg.usos) {
+    mostrarMsg(msg, 'error', '❌ Este código ya alcanzó su límite de usos.');
+    return;
+  }
+
+  usosRegistrados[codigo] = usados + 1;
+  estado.codigo = codigo;
+  estado.campaña = cfg.campaña;
+  mostrarMsg(msg, 'ok', `✅ Código válido — Campaña: ${cfg.campaña}`);
+  setTimeout(() => showScreen('s-registro'), 1200);
+}
+
+// ============ REGISTRO ============
+let plantelSel = null;
+let compromiso = false;
+
+function selPlantel(p) {
+  plantelSel = p;
+  document.getElementById('opt-p9').classList.toggle('selected', p==='P9');
+  document.getElementById('opt-p3').classList.toggle('selected', p==='P3');
+}
+
+function toggleCheck() {
+  compromiso = !compromiso;
+  const icon = document.getElementById('chk-icon');
+  icon.className = 'chk' + (compromiso ? ' checked' : '');
+  icon.textContent = compromiso ? '✓' : '';
+}
+
+function iniciarExamen() {
+  const alumno = document.getElementById('reg-alumno').value.trim();
+  const tutor = document.getElementById('reg-tutor').value.trim();
+  const tel = document.getElementById('reg-tel').value.trim();
+  const msg = document.getElementById('msg-registro');
+
+  if (!alumno) { mostrarMsg(msg,'error','⚠️ Ingresa el nombre del alumno.'); return; }
+  if (!tutor) { mostrarMsg(msg,'error','⚠️ Ingresa el nombre del tutor.'); return; }
+  if (!tel) { mostrarMsg(msg,'error','⚠️ Ingresa el WhatsApp del tutor.'); return; }
+  if (!plantelSel) { mostrarMsg(msg,'error','⚠️ Selecciona tu plantel objetivo.'); return; }
+  if (!compromiso) { mostrarMsg(msg,'error','⚠️ Debes aceptar el compromiso de feedback.'); return; }
+
+  estado.alumno = alumno;
+  estado.tutor = tutor;
+  estado.tel = tel;
+  estado.plantel = plantelSel;
+  estado.tiempoInicio = new Date();
+
+  document.getElementById('hdr-alumno-nombre').textContent = alumno.split(' ')[0];
+  document.getElementById('hdr-plantel-info').textContent = `Meta: Prepa ${plantelSel.replace('P','')}`;
+
+  showScreen('s-examen');
+  renderNavPreguntas();
+  mostrarPregunta(0);
+  iniciarTimer();
+
+  sendTelegram(
+`🎯 <b>Nuevo aspirante iniciando examen</b>
+
+👤 <b>Alumno:</b> ${alumno}
+👨 <b>Tutor:</b> ${tutor} | ${tel}
+🎫 <b>Código:</b> ${estado.codigo} (${estado.campaña})
+🏫 <b>Meta:</b> Prepa ${plantelSel.replace('P','')}
+📅 ${new Date().toLocaleString('es-MX')}`
+  );
+}
+
+// ============ EXAMEN ============
+function renderNavPreguntas() {
+  const wrap = document.getElementById('nav-preguntas');
+  wrap.innerHTML = '';
+  PREGUNTAS.forEach((p,i) => {
+    const btn = document.createElement('div');
+    btn.className = 'nav-q' + (i===0?' actual':'') + (estado.respuestas[i]!==undefined?' respondida':'');
+    btn.textContent = i+1;
+    btn.onclick = () => mostrarPregunta(i);
+    btn.id = `nav-q-${i}`;
+    wrap.appendChild(btn);
+  });
+}
+
+function mostrarPregunta(idx) {
+  if (idx < 0 || idx >= PREGUNTAS.length) return;
+
+  // Actualizar nav
+  document.querySelectorAll('.nav-q').forEach((el,i) => {
+    el.classList.toggle('actual', i===idx);
+  });
+
+  estado.preguntaActual = idx;
+  const p = PREGUNTAS[idx];
+
+  document.getElementById('area-badge').textContent = `${p.icono} ${p.area}`;
+  document.getElementById('pregunta-num').textContent = `Pregunta ${idx+1} de ${PREGUNTAS.length}`;
+  document.getElementById('pregunta-txt').textContent = p.texto;
+
+  // Progreso
+  const respondidas = Object.keys(estado.respuestas).length;
+  document.getElementById('prog-texto').textContent = `Pregunta ${idx+1} de ${PREGUNTAS.length}`;
+  document.getElementById('prog-resp').textContent = `${respondidas} respondidas`;
+  document.getElementById('prog-fill').style.width = `${(respondidas/PREGUNTAS.length)*100}%`;
+
+  // Opciones
+  const letras = ['A','B','C','D'];
+  const wrap = document.getElementById('opciones-wrap');
+  wrap.innerHTML = '';
+  p.ops.forEach((op, oi) => {
+    const div = document.createElement('div');
+    div.className = 'opcion' + (estado.respuestas[idx]===oi?' selected':'');
+    div.innerHTML = `<div class="opcion-letra">${letras[oi]}</div><div>${op}</div>`;
+    div.onclick = () => seleccionarRespuesta(idx, oi);
+    wrap.appendChild(div);
+  });
+
+  // Botón siguiente
+  const btnSig = document.getElementById('btn-siguiente');
+  btnSig.textContent = idx === PREGUNTAS.length-1 ? 'Finalizar ✓' : 'Siguiente →';
+  if (idx === PREGUNTAS.length-1) {
+    btnSig.onclick = () => confirmarFinalizar();
+  } else {
+    btnSig.onclick = () => navPregunta(1);
+  }
+}
+
+function seleccionarRespuesta(idx, opIdx) {
+  estado.respuestas[idx] = opIdx;
+  const navQ = document.getElementById(`nav-q-${idx}`);
+  if (navQ) navQ.classList.add('respondida');
+
+  document.querySelectorAll('.opcion').forEach((el,i) => {
+    el.classList.toggle('selected', i===opIdx);
+  });
+
+  const respondidas = Object.keys(estado.respuestas).length;
+  document.getElementById('prog-resp').textContent = `${respondidas} respondidas`;
+  document.getElementById('prog-fill').style.width = `${(respondidas/PREGUNTAS.length)*100}%`;
+}
+
+function navPregunta(dir) {
+  const next = estado.preguntaActual + dir;
+  if (next >= 0 && next < PREGUNTAS.length) mostrarPregunta(next);
+}
+
+function confirmarFinalizar() {
+  const respondidas = Object.keys(estado.respuestas).length;
+  const pendientes = PREGUNTAS.length - respondidas;
+  if (pendientes > 0) {
+    if (!confirm(`Tienes ${pendientes} preguntas sin responder. ¿Deseas finalizar de todas formas?\n\nRecuerda: no hay penalización por respuesta incorrecta.`)) return;
+  }
+  clearInterval(estado.timerInterval);
+  estado.tiempoUsado = 10800 - estado.segundosRestantes;
+  irAFeedback();
+}
+
+function irAFeedback() {
+  showScreen('s-feedback');
+}
+
+// ============ CALCULAR RESULTADOS ============
+function calcularResultados() {
+  const areas = {};
+  PREGUNTAS.forEach((p, i) => {
+    if (!areas[p.area]) areas[p.area] = { correctas:0, total:0, icono:p.icono };
+    areas[p.area].total++;
+    if (estado.respuestas[i] === p.r) areas[p.area].correctas++;
+  });
+
+  let total = 0;
+  Object.values(areas).forEach(a => total += a.correctas);
+
+  return { areas, total };
+}
+
+// ============ ENVIAR RESULTADOS ============
+async function enviarResultados() {
+  const fb1 = document.getElementById('fb-dificil').value.trim();
+  const fb2 = document.getElementById('fb-nivel').value.trim();
+  const fb3 = document.getElementById('fb-mejora').value.trim();
+  const msg = document.getElementById('msg-feedback');
+
+  if (fb1.length < 15 || fb2.length < 10 || fb3.length < 10) {
+    mostrarMsg(msg, 'error', '⚠️ Por favor completa todos los campos de feedback (mínimo 10 caracteres cada uno).');
+    return;
+  }
+
+  document.getElementById('sending-overlay').classList.add('show');
+
+  const { areas, total } = calcularResultados();
+  const corteP9 = 107, corteP3 = 102;
+  const diffP9 = total - corteP9;
+  const diffP3 = total - corteP3;
+  const statusP9 = diffP9 >= 5 ? '✅ MUY PROBABLE' : diffP9 >= 0 ? '✅ PROBABLE' : diffP9 >= -5 ? '⚠️ CERCA' : '❌ FUERA';
+  const statusP3 = diffP3 >= 5 ? '✅ MUY PROBABLE' : diffP3 >= 0 ? '✅ PROBABLE' : diffP3 >= -5 ? '⚠️ CERCA' : '❌ FUERA';
+
+  const tiempoStr = formatTime(estado.tiempoUsado);
+
+  let areasStr = '';
+  Object.entries(areas).forEach(([nombre, data]) => {
+    const emoji = data.correctas/data.total >= 0.8 ? '✅' : data.correctas/data.total >= 0.6 ? '⚠️' : '❌';
+    areasStr += `${emoji} ${data.icono} ${nombre}: ${data.correctas}/${data.total}\n`;
+  });
+
+  const mensaje = `📋 <b>RESULTADO — Simulador Prepa UNAM 2026</b>
+
+👤 <b>Alumno:</b> ${estado.alumno}
+👨 <b>Tutor:</b> ${estado.tutor} | ${estado.tel}
+🎫 <b>Código:</b> ${estado.codigo} (${estado.campaña})
+🏫 <b>Meta:</b> Prepa ${estado.plantel.replace('P','')}
+
+📊 <b>Puntaje total: ${total} / 120</b>
+
+${areasStr}
+🏫 Prepa 9 (corte 107): ${statusP9}
+🏫 Prepa 3 (corte 102): ${statusP3}
+
+⏱ Tiempo usado: ${tiempoStr} / 3:00:00
+📅 ${new Date().toLocaleString('es-MX')}
+
+💬 <b>Feedback:</b>
+• Área difícil: ${fb1}
+• Nivel vs examen real: ${fb2}
+• Mejoras: ${fb3}`;
+
+  await sendTelegram(mensaje);
+
+  document.getElementById('sending-overlay').classList.remove('show');
+  mostrarResultados(areas, total, tiempoStr, statusP9, statusP3);
+}
+
+// ============ MOSTRAR RESULTADOS ============
+function mostrarResultados(areas, total, tiempoStr, statusP9, statusP3) {
+  showScreen('s-resultados');
+
+  document.getElementById('res-score').textContent = total;
+  document.getElementById('res-subtitulo').textContent = `${estado.alumno} · Prepa ${estado.plantel.replace('P','')}`;
+  document.getElementById('res-tiempo-usado').textContent = `⏱ Tiempo: ${tiempoStr} de 3:00:00`;
+
+  // Desglose áreas
+  const colores = {
+    'Matemáticas':'#60a5fa','Español':'#a78bfa','Física':'#34d399',
+    'Química':'#f97316','Biología':'#22c55e','Historia':'#fbbf24','Civismo y Geografía':'#e879f9'
+  };
+
+  let areasHtml = '';
+  Object.entries(areas).forEach(([nombre, data]) => {
+    const pct = (data.correctas/data.total)*100;
+    const color = colores[nombre] || '#60a5fa';
+    areasHtml += `
+      <div class="area-row">
+        <div class="area-nombre">${data.icono} ${nombre}</div>
+        <div class="area-bar-wrap"><div class="area-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+        <div class="area-pts" style="color:${color}">${data.correctas}/${data.total}</div>
+      </div>`;
+  });
+  document.getElementById('res-areas').innerHTML = areasHtml;
+
+  // Planteles
+  const corteP9=107, corteP3=102;
+  const diffP9=total-corteP9, diffP3=total-corteP3;
+  const clP9 = diffP9>=0?'ok':diffP9>=-5?'cerca':'no';
+  const clP3 = diffP3>=0?'ok':diffP3>=-5?'cerca':'no';
+
+  document.getElementById('res-planteles').innerHTML = `
+    <div class="plantel-resultado ${clP9}">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;color:#60a5fa">ENP 9 — Pedro de Alba</div>
+        <div style="font-size:11px;color:var(--gris)">Corte 2024: 107 · Proyección 2026: 109–112</div>
+      </div>
+      <div style="font-weight:700;font-size:13px">${statusP9}</div>
+    </div>
+    <div class="plantel-resultado ${clP3}">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;color:#a78bfa">ENP 3 — Justo Sierra</div>
+        <div style="font-size:11px;color:var(--gris)">Corte 2024: 102 · Proyección 2026: 104–107</div>
+      </div>
+      <div style="font-weight:700;font-size:13px">${statusP3}</div>
+    </div>`;
+
+  // Tips personalizados
+  const areasSorted = Object.entries(areas).sort((a,b) => (a[1].correctas/a[1].total)-(b[1].correctas/b[1].total));
+  let tipsHtml = '';
+  areasSorted.slice(0,3).forEach(([nombre, data]) => {
+    const pct = Math.round((data.correctas/data.total)*100);
+    const tips = {
+      'Matemáticas':'Refuerza álgebra y geometría analítica — son los temas con más reactivos.',
+      'Español':'Practica comprensión lectora con textos académicos. Lee un artículo diario.',
+      'Física':'Domina las fórmulas básicas y sus unidades. Resuelve 5 problemas diarios.',
+      'Química':'Balanceo de ecuaciones y tabla periódica son la clave. Practica diario.',
+      'Biología':'Repasa genética y procesos celulares — los más frecuentes en el examen.',
+      'Historia':'Crea líneas de tiempo para México y el mundo. Conecta eventos.',
+      'Civismo y Geografía':'Estudia los artículos constitucionales clave y geografía de México.'
+    };
+    tipsHtml += `
+      <div style="padding:12px;background:var(--bg3);border-radius:8px;margin-bottom:8px;border-left:3px solid var(--rojo);">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">${data.icono} ${nombre} — ${pct}% de aciertos</div>
+        <div style="font-size:12px;color:var(--gris);margin-top:4px;">${tips[nombre]||'Refuerza esta área con más práctica.'}</div>
+      </div>`;
+  });
+  document.getElementById('res-tips').innerHTML = tipsHtml;
+  document.getElementById('res-enviado-status').textContent = '✅ Resultado enviado exitosamente';
+}
+
+// ============ UTILIDADES ============
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+function mostrarMsg(el, tipo, texto) {
+  el.className = `msg ${tipo} show`;
+  el.textContent = texto;
+  setTimeout(() => el.classList.remove('show'), 5000);
+}
+</script>
+</body>
+</html>
