@@ -661,15 +661,8 @@ const TG_CHATS = ['7337705861', '814061679'];
 async function sendTelegram(msg) {
   for (const chatId of TG_CHATS) {
     try {
-      await fetch(`https://api.telegram.org/bot${TG_TOKEN}/sendMessage`, {
-        method: 'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify({
-          chat_id: chatId,
-          text: msg,
-          parse_mode: 'HTML'
-        })
-      });
+      const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}&parse_mode=HTML`;
+      await fetch(url, { method: 'GET', mode: 'no-cors' });
     } catch(e) { console.log('TG error:', e); }
   }
 }
