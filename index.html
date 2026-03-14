@@ -147,8 +147,9 @@ textarea:focus{border-color:var(--oro);}
   <div class="modal-box">
     <div class="modal-titulo">⚠️ ¿Listo para comenzar?</div>
     <div class="modal-txt">
-      Una vez que inicies el examen <strong style="color:var(--oro)">no podrás pausarlo</strong>.<br><br>
-      Tienes <strong>3 horas exactas</strong> para responder 120 preguntas.<br><br>
+      Una vez que inicies el simulacro <strong style="color:var(--oro)">no podrás pausarlo</strong>.<br><br>
+      Tienes <strong>3 horas exactas</strong> para responder 128 reactivos diagnósticos.<br><br>
+      El examen real ECOEMS tiene 128 preguntas — este simulacro mide exactamente en qué materias estás bien y dónde necesitas refuerzo.<br><br>
       Asegúrate de estar en un lugar tranquilo con buena conexión a internet.
     </div>
     <div class="modal-btns">
@@ -185,7 +186,7 @@ textarea:focus{border-color:var(--oro);}
       </div>
     </div>
     <div style="text-align:center;font-size:10px;color:var(--gris);padding-bottom:20px;">
-      Examen diagnóstico oficial · 120 reactivos · 3 horas<br>
+      Simulacro diagnóstico · 128 reactivos · 3 horas<br>
       Basado en temario ECOEMS 2026 · UNAM + IPN
     </div>
   </div>
@@ -302,7 +303,7 @@ textarea:focus{border-color:var(--oro);}
   </div>
   <div class="progress-wrap">
     <div class="progress-info">
-      <span id="prog-texto">Pregunta 1 de 120</span>
+      <span id="prog-texto">Pregunta 1 de 128</span>
       <span id="prog-resp">0 respondidas</span>
     </div>
     <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
@@ -372,7 +373,7 @@ textarea:focus{border-color:var(--oro);}
     <div class="card">
       <div class="score-big">
         <div class="score-num" id="res-score">—</div>
-        <div class="score-total">de 120 aciertos</div>
+        <div class="score-total">de 128 aciertos</div>
         <div style="margin-top:8px;font-size:13px;color:var(--gris);" id="res-tiempo"></div>
         <div style="margin-top:4px;font-size:12px;color:var(--oro);" id="res-dias"></div>
       </div>
@@ -398,9 +399,15 @@ textarea:focus{border-color:var(--oro);}
       <div id="oferta-contenido"></div>
     </div>
 
-    <div style="text-align:center;padding:16px 0;font-size:11px;color:var(--gris);">
-      Resultado enviado a tu asesor ✅<br>
-      <span id="res-status"></span>
+    <div style="text-align:center;padding:24px 0;">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--verde);margin-bottom:8px;">
+        ✅ Diagnóstico enviado a tu asesor
+      </div>
+      <div style="font-size:13px;color:var(--gris);line-height:1.8;margin-bottom:16px;">
+        Tu asesor ya tiene tu fotografía completa.<br>
+        En breve te contactará con tu plan personalizado.
+      </div>
+      <div style="font-size:11px;color:var(--gris);" id="res-status"></div>
     </div>
   </div>
 </div>
@@ -651,6 +658,38 @@ function iniciarTimer() {
 // PREGUNTAS
 // ============================================================
 const PREGUNTAS = [
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Cuál es la relación correcta? LIBRO es a LEER como PINTURA es a:',ops:['Pintar','Ver','Crear','Museo'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'Completa la analogía: MÉDICO es a HOSPITAL como MAESTRO es a:',ops:['Libro','Escuela','Alumno','Ciencia'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Qué palabra NO pertenece al grupo? Rosa, Clavel, Tulipán, Pino',ops:['Rosa','Clavel','Pino','Tulipán'],r:2},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'AGUA es a SED como COMIDA es a:',ops:['Cocinar','Hambre','Comer','Nutrición'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Cuál es el sinónimo de VELOZ?',ops:['Lento','Rápido','Fuerte','Pesado'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Cuál es el antónimo de ABUNDANCIA?',ops:['Riqueza','Exceso','Escasez','Prosperidad'],r:2},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'Completa: ZAPATO es a PIE como GUANTE es a:',ops:['Dedo','Mano','Brazo','Uña'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Qué palabra completa correctamente? "El alumno _____ sus tareas todos los días."',ops:['hacen','hizo','hace','hicieron'],r:2},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'NOCHE es a OSCURIDAD como DÍA es a:',ops:['Sol','Luz','Calor','Tiempo'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Qué palabra NO pertenece? Perro, Gato, Águila, Ratón',ops:['Perro','Águila','Gato','Ratón'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'Lee y responde: "Juan estudia 3 horas al día. María estudia el doble." ¿Cuántas horas estudia María?',ops:['3 horas','5 horas','6 horas','9 horas'],r:2},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Cuál es el significado de la palabra EFÍMERO?',ops:['Eterno','Pasajero','Intenso','Antiguo'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'CALOR es a VERANO como FRÍO es a:',ops:['Lluvia','Nieve','Invierno','Viento'],r:2},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Qué opción ordena correctamente? 1-Estudié. 2-Presenté el examen. 3-Me preparé. 4-Obtuve resultado.',ops:['1,2,3,4','3,1,2,4','1,3,2,4','2,1,3,4'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Cuál es el sinónimo de PERSPICAZ?',ops:['Torpe','Agudo','Lento','Distraído'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'AUTOR es a LIBRO como COMPOSITOR es a:',ops:['Piano','Canción','Teatro','Poema'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente número? 2, 4, 8, 16, ___',ops:['24','32','28','20'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente número? 1, 4, 9, 16, ___',ops:['20','25','23','27'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Si 5 lápices cuestan $15, ¿cuánto cuestan 8 lápices?',ops:['$20','$24','$28','$18'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente número? 3, 6, 9, 12, ___',ops:['14','15','16','18'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Un tren sale a las 8:00 y llega a las 11:30. ¿Cuánto duró el viaje?',ops:['2h 30min','3h','3h 30min','4h'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál número es mayor? 3/4, 2/3, 5/8, 7/10',ops:['2/3','5/8','3/4','7/10'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Si A > B y B > C, entonces:',ops:['C > A','A > C','C > B','B > A'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente? 1, 1, 2, 3, 5, 8, ___',ops:['10','11','13','12'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Si duplicas un número y le sumas 6 obtienes 20. ¿Cuál es el número?',ops:['5','6','7','8'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el 30% de 200?',ops:['30','50','60','45'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'En una clase hay 40 alumnos. El 25% son mujeres. ¿Cuántos hombres hay?',ops:['25','30','10','20'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente? Z, Y, X, W, ___',ops:['U','T','V','S'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Un producto cuesta $80 con 20% de descuento. ¿Cuánto pagas?',ops:['$60','$64','$70','$68'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente? 100, 50, 25, ___',ops:['10','15','12.5','20'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Si hay 3 cajas con 4 pelotas cada una, ¿cuántas pelotas hay en total?',ops:['7','10','12','14'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuántos minutos hay en 2.5 horas?',ops:['120','130','150','180'],r:2},
   {area:'Matemáticas',icono:'📐',texto:'Si f(x) = 3x² - 2x + 1, ¿cuál es el valor de f(3)?',ops:['22','28','20','25'],r:1},
   {area:'Matemáticas',icono:'📐',texto:'¿Cuál es la solución del sistema: 2x + y = 7 y x - y = 2?',ops:['x=2, y=3','x=3, y=1','x=3, y=2','x=1, y=5'],r:1},
   {area:'Matemáticas',icono:'📐',texto:'Simplifica: (x² - 4) ÷ (x - 2)',ops:['x + 2','x - 2','x² + 2','2x'],r:0},
@@ -663,14 +702,6 @@ const PREGUNTAS = [
   {area:'Matemáticas',icono:'📐',texto:'¿Cuántos números naturales de 3 cifras son divisibles entre 5?',ops:['180','160','150','200'],r:0},
   {area:'Matemáticas',icono:'📐',texto:'La probabilidad de sacar un 6 al lanzar un dado es:',ops:['1/6','1/3','1/2','2/6'],r:0},
   {area:'Matemáticas',icono:'📐',texto:'¿Cuánto mide la hipotenusa de un triángulo rectángulo con catetos 6 y 8?',ops:['10','12','14','9'],r:0},
-  {area:'Matemáticas',icono:'📐',texto:'Factoriza completamente: x² - 5x + 6',ops:['(x-2)(x-3)','(x+2)(x+3)','(x-1)(x-6)','(x-2)(x+3)'],r:0},
-  {area:'Matemáticas',icono:'📐',texto:'Si A = {1,2,3} y B = {2,3,4}, ¿cuál es A ∩ B?',ops:['{2,3}','{1,2,3,4}','{1,4}','{2}'],r:0},
-  {area:'Matemáticas',icono:'📐',texto:'¿Cuál es el valor de (2³)²?',ops:['64','32','16','128'],r:0},
-  {area:'Matemáticas',icono:'📐',texto:'La derivada de f(x) = x³ + 2x es:',ops:['3x² + 2','3x² + 2x','x² + 2','3x + 2'],r:0},
-  {area:'Matemáticas',icono:'📐',texto:'¿Cuánto es √144 + √25?',ops:['17','19','16','21'],r:0},
-  {area:'Matemáticas',icono:'📐',texto:'Si un triángulo tiene ángulos de 40° y 70°, ¿cuánto mide el tercero?',ops:['70°','60°','80°','50°'],r:0},
-  {area:'Matemáticas',icono:'📐',texto:'¿Cuál es el mínimo de f(x) = x² - 4x + 7?',ops:['3','7','4','1'],r:0},
-  {area:'Matemáticas',icono:'📐',texto:'Un automóvil recorre 180 km en 2 horas. ¿Cuál es su velocidad promedio?',ops:['90 km/h','80 km/h','100 km/h','70 km/h'],r:0},
   {area:'Español',icono:'📖',texto:'¿Cuál de las siguientes oraciones tiene un complemento directo?',ops:['María corre rápido','Pedro compró un libro','Ana es inteligente','El cielo está nublado'],r:1},
   {area:'Español',icono:'📖',texto:'Identifica la figura retórica: "Sus ojos son dos luceros"',ops:['Hipérbole','Metonimia','Metáfora','Símil'],r:2},
   {area:'Español',icono:'📖',texto:'¿Qué tipo de narrador conoce los pensamientos de todos los personajes?',ops:['Primera persona','Testigo','Omnisciente','Protagonista'],r:2},
@@ -683,14 +714,6 @@ const PREGUNTAS = [
   {area:'Español',icono:'📖',texto:'¿Qué género literario incluye el cuento y la novela?',ops:['Lírico','Dramático','Narrativo','Épico'],r:2},
   {area:'Español',icono:'📖',texto:'La palabra "deshacer" tiene el prefijo:',ops:['des-','de-','d-','desh-'],r:0},
   {area:'Español',icono:'📖',texto:'En la oración "El maestro explicó la lección", el sujeto es:',ops:['explicó','la lección','El maestro','la'],r:2},
-  {area:'Español',icono:'📖',texto:'¿Qué tiempo verbal es "hubiera cantado"?',ops:['Pretérito imperfecto','Pretérito pluscuamperfecto de subjuntivo','Futuro compuesto','Condicional compuesto'],r:1},
-  {area:'Español',icono:'📖',texto:'"Muerto el perro, se acabó la rabia" es un ejemplo de:',ops:['Metáfora','Refrán','Hipérbole','Anáfora'],r:1},
-  {area:'Español',icono:'📖',texto:'La tesis en un texto argumentativo se ubica generalmente:',ops:['Al inicio o al final','Solo al final','En el desarrollo','En los ejemplos'],r:0},
-  {area:'Español',icono:'📖',texto:'¿Cuál de estos es un conector de causa?',ops:['Sin embargo','Por lo tanto','Porque','Además'],r:2},
-  {area:'Español',icono:'📖',texto:'La ironía consiste en:',ops:['Exagerar la realidad','Decir lo contrario de lo que se piensa','Comparar dos elementos','Repetir palabras'],r:1},
-  {area:'Español',icono:'📖',texto:'¿Qué elemento NO forma parte de la estructura del cuento clásico?',ops:['Nudo','Desenlace','Prólogo','Inicio'],r:2},
-  {area:'Español',icono:'📖',texto:'La palabra "televisión" es un ejemplo de:',ops:['Arcaísmo','Neologismo','Vulgarismo','Tecnicismo'],r:1},
-  {area:'Español',icono:'📖',texto:'"Corre, corre que te alcanzo" — la figura que se repite se llama:',ops:['Metáfora','Anáfora','Hipérbole','Elipsis'],r:1},
   {area:'Física',icono:'⚡',texto:'La unidad del Sistema Internacional para medir la fuerza es:',ops:['Joule','Newton','Pascal','Watt'],r:1},
   {area:'Física',icono:'⚡',texto:'Un objeto cae libremente desde el reposo. A los 2 segundos su velocidad es: (g=10m/s²)',ops:['10 m/s','20 m/s','40 m/s','5 m/s'],r:1},
   {area:'Física',icono:'⚡',texto:'La primera ley de Newton establece que:',ops:['F=ma','Un cuerpo en reposo permanece así si no actúa fuerza neta','Por cada acción hay reacción','El trabajo es fuerza por distancia'],r:1},
@@ -703,9 +726,6 @@ const PREGUNTAS = [
   {area:'Física',icono:'⚡',texto:'¿Qué partícula subatómica tiene carga negativa?',ops:['Protón','Neutrón','Electrón','Positrón'],r:2},
   {area:'Física',icono:'⚡',texto:'La frecuencia y el período de una onda son:',ops:['Directamente proporcionales','Inversamente proporcionales','Iguales','Independientes'],r:1},
   {area:'Física',icono:'⚡',texto:'Un cuerpo con velocidad constante tiene fuerza neta:',ops:['Grande','Igual a cero','Variable','Positiva'],r:1},
-  {area:'Física',icono:'⚡',texto:'¿En qué se transforma la energía cinética de un auto al frenar?',ops:['Energía potencial','Energía nuclear','Calor','Energía eléctrica'],r:2},
-  {area:'Física',icono:'⚡',texto:'La presión atmosférica estándar equivale a:',ops:['1 atm = 100 kPa','1 atm ≈ 101.3 kPa','1 atm = 760 Pa','1 atm = 1000 mbar'],r:1},
-  {area:'Física',icono:'⚡',texto:'Un generador eléctrico convierte:',ops:['Energía eléctrica en mecánica','Energía mecánica en eléctrica','Calor en electricidad','Luz en electricidad'],r:1},
   {area:'Química',icono:'🧪',texto:'¿Cuál es la fórmula del peróxido de hidrógeno?',ops:['H₂O','HO','H₂O₂','H₃O'],r:2},
   {area:'Química',icono:'🧪',texto:'El número de Avogadro (6.022×10²³) representa:',ops:['Electrones en un átomo','Partículas en un mol','Masa de un mol','Velocidad de reacción'],r:1},
   {area:'Química',icono:'🧪',texto:'En la tabla periódica, los halógenos se ubican en el grupo:',ops:['IA','IVA','VIIA','0 (gases nobles)'],r:2},
@@ -718,9 +738,6 @@ const PREGUNTAS = [
   {area:'Química',icono:'🧪',texto:'¿Qué tipo de reacción produce calor?',ops:['Endotérmica','Exotérmica','Neutra','Catalítica'],r:1},
   {area:'Química',icono:'🧪',texto:'El isótopo del carbono usado en datación radiactiva es:',ops:['C-12','C-13','C-14','C-11'],r:2},
   {area:'Química',icono:'🧪',texto:'¿Cuántos electrones caben en el tercer nivel de energía?',ops:['2','8','18','32'],r:2},
-  {area:'Química',icono:'🧪',texto:'Una solución buffer mantiene constante:',ops:['La temperatura','El pH','La concentración','El volumen'],r:1},
-  {area:'Química',icono:'🧪',texto:'El etanol (alcohol etílico) tiene la fórmula:',ops:['CH₃OH','C₂H₅OH','C₃H₇OH','CH₄'],r:1},
-  {area:'Química',icono:'🧪',texto:'La Ley de conservación de la masa establece que:',ops:['La energía no se crea ni destruye','Masa reactivos = masa productos','Los gases ideales obedecen PV=nRT','Los metales conducen electricidad'],r:1},
   {area:'Biología',icono:'🧬',texto:'¿En qué orgánulo celular se lleva a cabo la fotosíntesis?',ops:['Mitocondria','Ribosoma','Cloroplasto','Núcleo'],r:2},
   {area:'Biología',icono:'🧬',texto:'El ADN tiene como bases nitrogenadas:',ops:['A, T, G, U','A, T, G, C','A, U, G, C','A, T, C, U'],r:1},
   {area:'Biología',icono:'🧬',texto:'¿Cuál de los siguientes es un organismo procariota?',ops:['Hongo','Bacteria','Planta','Animal'],r:1},
@@ -733,9 +750,6 @@ const PREGUNTAS = [
   {area:'Biología',icono:'🧬',texto:'En la cadena trófica, los productores son:',ops:['Animales carnívoros','Descomponedores','Plantas y algas','Herbívoros'],r:2},
   {area:'Biología',icono:'🧬',texto:'La pared celular de plantas está compuesta principalmente de:',ops:['Proteínas','Lípidos','Celulosa','Quitina'],r:2},
   {area:'Biología',icono:'🧬',texto:'¿Cuántos pares de cromosomas tiene el ser humano?',ops:['23','46','44','22'],r:0},
-  {area:'Biología',icono:'🧬',texto:'El proceso por el cual las plantas pierden agua por las hojas se llama:',ops:['Fotosíntesis','Transpiración','Osmosis','Difusión'],r:1},
-  {area:'Biología',icono:'🧬',texto:'Un virus puede reproducirse:',ops:['Solo','Dentro de células huésped','En cualquier medio','Con oxígeno únicamente'],r:1},
-  {area:'Biología',icono:'🧬',texto:'Las leyes de Mendel se relacionan con:',ops:['Evolución de especies','Herencia genética','Estructura del ADN','División celular'],r:1},
   {area:'Historia',icono:'🏛️',texto:'¿En qué año inició la Revolución Mexicana?',ops:['1900','1910','1920','1905'],r:1},
   {area:'Historia',icono:'🏛️',texto:'La Constitución Mexicana vigente fue promulgada en:',ops:['1857','1917','1910','1824'],r:1},
   {area:'Historia',icono:'🏛️',texto:'¿Quién fue el primer presidente de México?',ops:['Benito Juárez','Agustín de Iturbide','Guadalupe Victoria','Santa Anna'],r:2},
@@ -748,29 +762,30 @@ const PREGUNTAS = [
   {area:'Historia',icono:'🏛️',texto:'¿Cuál fue la primera civilización de Mesoamérica?',ops:['Azteca','Maya','Olmeca','Teotihuacana'],r:2},
   {area:'Historia',icono:'🏛️',texto:'El Porfiriato se caracterizó por:',ops:['Gran democracia','Largo gobierno de Díaz con modernización y represión','Revolución social','Independencia'],r:1},
   {area:'Historia',icono:'🏛️',texto:'La Guerra Fría fue un conflicto entre:',ops:['México y EUA','URSS y China','EUA y la URSS','Europa y Asia'],r:2},
-  {area:'Historia',icono:'🏛️',texto:'¿En qué año cayó el Muro de Berlín?',ops:['1985','1987','1989','1991'],r:2},
-  {area:'Historia',icono:'🏛️',texto:'El movimiento estudiantil de 1968 en México culminó con:',ops:['Reforma educativa','La masacre de Tlatelolco','Renuncia del presidente','Elecciones anticipadas'],r:1},
-  {area:'Historia',icono:'🏛️',texto:'Las Leyes de Reforma de Juárez buscaban principalmente:',ops:['Expulsar españoles','Separar la Iglesia del Estado','Industrializar México','Crear el ejército'],r:1},
-  {area:'Historia',icono:'🏛️',texto:'¿Quién llegó a América en 1492?',ops:['Américo Vespucio','Fernando de Magallanes','Cristóbal Colón','Hernán Cortés'],r:2},
-  {area:'Historia',icono:'🏛️',texto:'La Revolución Industrial inició en:',ops:['Francia','Alemania','Inglaterra','Estados Unidos'],r:2},
-  {area:'Historia',icono:'🏛️',texto:'El T-MEC es un acuerdo comercial entre:',ops:['México, Cuba y Venezuela','México, EUA y Canadá','México, EUA y Brasil','México y Centroamérica'],r:1},
-  {area:'Historia',icono:'🏛️',texto:'La Independencia de México se consumó en:',ops:['1810','1813','1821','1824'],r:2},
-  {area:'Historia',icono:'🏛️',texto:'¿Qué documento firmó Lincoln para abolir la esclavitud en EUA?',ops:['Declaración de Independencia','Proclamación de Emancipación','Constitución','Carta Magna'],r:1},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Cuántos estados tiene la República Mexicana?',ops:['30','31','32','33'],r:2},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Cuál es el río más largo de México?',ops:['Balsas','Grijalva','Bravo','Usumacinta'],r:2},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'El Poder Judicial en México lo encabeza:',ops:['El Presidente','La Suprema Corte de Justicia','El Senado','La Cámara de Diputados'],r:1},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Cuál es la capital de Brasil?',ops:['São Paulo','Río de Janeiro','Brasilia','Salvador'],r:2},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'¿En qué continente se encuentra Egipto?',ops:['Asia','Europa','América','África'],r:3},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'La CDMX está en la zona geográfica conocida como:',ops:['Valle de Oaxaca','Valle de México','Mesa del Norte','Llanura Costera'],r:1},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Cuántos artículos tiene la Constitución Política de México?',ops:['100','136','200','120'],r:1},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'El sufragio universal en México otorga el derecho a votar a partir de los:',ops:['21 años','16 años','18 años','20 años'],r:2},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Qué tipo de clima predomina en el norte de México?',ops:['Tropical','Templado','Árido y semiárido','Polar'],r:2},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'El Senado de México está compuesto por:',ops:['500 senadores','300 senadores','128 senadores','200 senadores'],r:2},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'La corriente oceánica que influye en México por el Pacífico es:',ops:['Corriente del Golfo','Corriente de Humboldt','Corriente de California','Corriente de Labrador'],r:2},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Qué organización vela por los derechos humanos mundialmente?',ops:['OCDE','OEA','ONU / ACNUDH','OMC'],r:2},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'La Sierra Madre Occidental recorre México de:',ops:['Norte a Sur por el este','Norte a Sur por el oeste','Este a Oeste','Forma circular'],r:1},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'¿Cuál es el volcán más alto de México?',ops:['Popocatépetl','Iztaccíhuatl','Pico de Orizaba','Nevado de Toluca'],r:2},
-  {area:'Civismo y Geografía',icono:'🌍',texto:'El artículo 3° de la Constitución Mexicana garantiza:',ops:['Derecho a la salud','Libertad de expresión','Derecho a la educación','Derecho al trabajo'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es el río más largo del mundo?',ops:['Amazonas','Nilo','Misisipi','Yangtsé'],r:1},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es el océano más grande del mundo?',ops:['Atlántico','Índico','Pacífico','Ártico'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'¿Qué tipo de clima predomina en la Amazonía?',ops:['Desértico','Tropical húmedo','Templado','Polar'],r:1},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es la montaña más alta del mundo?',ops:['K2','Mont Blanc','Everest','Aconcagua'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'¿Qué país tiene mayor extensión territorial en el mundo?',ops:['China','Canadá','Rusia','Estados Unidos'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es la capital de Argentina?',ops:['São Paulo','Lima','Santiago','Buenos Aires'],r:3},
+  {area:'Geografía',icono:'🌍',texto:'¿Qué fenómeno provoca los terremotos?',ops:['Erupciones volcánicas','Movimiento de placas tectónicas','Corrientes oceánicas','Tormentas'],r:1},
+  {area:'Geografía',icono:'🌍',texto:'¿En qué zona climática se ubica la mayor parte de México?',ops:['Polar','Templada','Tropical y seca','Ecuatorial'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es el desierto más grande del mundo?',ops:['Sahara','Gobi','Atacama','Arábigo'],r:0},
+  {area:'Geografía',icono:'🌍',texto:'¿Qué corriente oceánica influye en el clima del norte de Europa?',ops:['Corriente de California','Corriente del Golfo','Corriente de Humboldt','Corriente de Labrador'],r:1},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es el volcán más alto de México?',ops:['Popocatépetl','Iztaccíhuatl','Pico de Orizaba','Nevado de Toluca'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'La Sierra Madre Occidental recorre México de:',ops:['Norte a Sur por el este','Norte a Sur por el oeste','Este a Oeste','Forma circular'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Cuál es el máximo ordenamiento jurídico de México?',ops:['Código Civil','Ley Federal del Trabajo','Constitución Política','Código Penal'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Cuántos poderes tiene el Estado mexicano?',ops:['2','3','4','5'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿A qué edad se adquiere la ciudadanía en México?',ops:['16 años','17 años','18 años','21 años'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Qué artículo constitucional garantiza el derecho a la educación?',ops:['Artículo 1°','Artículo 3°','Artículo 4°','Artículo 27'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Quién encabeza el Poder Ejecutivo en México?',ops:['El Senado','La SCJN','El Presidente de la República','La Cámara de Diputados'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Cuántos senadores integran el Senado de la República?',ops:['300','200','128','500'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'Los Derechos Humanos se caracterizan por ser:',ops:['Temporales y transferibles','Universales e inalienables','Solo para ciudadanos mexicanos','Otorgados por el gobierno'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Qué es la democracia?',ops:['Gobierno de los militares','Gobierno de una sola persona','Sistema donde el pueblo elige a sus gobernantes','Gobierno de los más ricos'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Cuál es la función principal del Poder Judicial?',ops:['Crear leyes','Aplicar e interpretar las leyes','Ejecutar el presupuesto','Dirigir las fuerzas armadas'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Qué institución protege los derechos humanos en México?',ops:['El Senado','La Secretaría de Gobernación','La CNDH','El Tribunal Electoral'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Qué es el sufragio?',ops:['Un impuesto','El derecho a votar','Una ley federal','Un tipo de protesta'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Cuál es el periodo presidencial en México?',ops:['4 años','5 años','6 años','7 años'],r:2}
 ];
 
 function renderNav() {
@@ -900,50 +915,88 @@ async function procesarResultados() {
 
   // Armar reporte de áreas
   let areasStr = '';
-  let segsStr = '';
+  let velocidadStr = '';
   Object.entries(areas).forEach(([nombre, data]) => {
     const pct = Math.round((data.correctas/data.total)*100);
     const emoji = pct >= 80 ? '✅' : pct >= 60 ? '⚠️' : '❌';
     const segProm = Math.round(data.segs / data.total);
-    areasStr += `${emoji} ${data.icono} ${nombre}: ${data.correctas}/${data.total} (${pct}%)\n`;
-    segsStr  += `• ${nombre}: ~${segProm}s/pregunta\n`;
+    const vel = segProm < 60 ? '⚡rápido' : segProm < 120 ? '🕐normal' : '🐢lento';
+    areasStr += `${emoji} ${nombre}: ${data.correctas}/${data.total} (${pct}%)\n`;
+    velocidadStr += `  • ${nombre}: ~${segProm}s → ${vel}\n`;
   });
 
   const diff = total - E.corte;
   const statusMeta = diff >= 5 ? '✅ MUY PROBABLE' : diff >= 0 ? '✅ EN RANGO' : diff >= -8 ? '⚠️ CERCA' : '❌ NECESITA REFUERZO';
+  const ptsFaltantes = Math.max(0, E.corte - total);
+  const ptsExtra = Math.max(0, total - E.corte);
+
+  const areasFuertes = Object.entries(areas).filter(([n,a]) => a.correctas/a.total >= 0.7).map(([n]) => n);
+  const areasDebiles = Object.entries(areas).filter(([n,a]) => a.correctas/a.total < 0.6).map(([n]) => n);
+
+  const urgencia = ptsFaltantes === 0
+    ? `🏆 YA SUPERA EL CORTE por ${ptsExtra} pts`
+    : ptsFaltantes <= 5
+    ? `🔥 SOLO LE FALTAN ${ptsFaltantes} PTS — cierre fácil`
+    : ptsFaltantes <= 15
+    ? `⚠️ Le faltan ${ptsFaltantes} pts — recuperable`
+    : `❌ Le faltan ${ptsFaltantes} pts — necesita plan serio`;
+
+  const gradoTexto = {'3sec':'3° secundaria','egresado':'Ya egresó','repite':'Ya presentó antes'}[E.grado] || E.grado;
+
+  const pitch = nivel === 1
+    ? `"Está a ${ptsFaltantes} pts. Con la guía de ${areasDebiles[0]||'refuerzo'} llega en 7 días. $299."`
+    : nivel === 2
+    ? `"Falló ${areasDebiles.length} materias (${areasDebiles.join(', ')}). Plan 10 días = $799."`
+    : nivel === 3
+    ? `"${areasDebiles.length} áreas débiles. Quedan ${diasStr.replace('⏳','')} — plan intensivo $1,299."`
+    : `"Necesita mentoría. Llámale HOY. Ofrece diagnóstico $999 o mentoría $1,999."`;
 
   const telLimpio = E.tel.replace(/\D/g,'');
   const waLink = `https://wa.me/52${telLimpio}`;
 
   const mensaje =
-`📊 <b>RESULTADO FINAL — PrepaSegura 2026</b>
+`━━━━━━━━━━━━━━━━━━━━━
+📊 <b>PREPASEGURA — RESULTADO</b>
+━━━━━━━━━━━━━━━━━━━━━
 
-👤 <b>Alumno:</b> ${E.alumno}
-📧 ${E.correo || 'sin correo'}
-👨 <b>Tutor:</b> ${E.tutor}
-📱 <a href="${waLink}">WhatsApp → ${E.tel}</a>
-🎓 Grado: ${E.grado}
+👤 <b>ALUMNO</b>
+  ${E.alumno} | ${gradoTexto}
+  📧 ${E.correo || 'sin correo'}
+
+👨 <b>TUTOR</b>
+  ${E.tutor}
+  📲 <a href="${waLink}">WhatsApp → ${E.tel}</a>
+
 🎫 Código: ${E.codigo}
-🏫 Meta: ${E.plantel_nombre}
+🏫 Meta: <b>${E.plantel_nombre}</b>
+📅 Examen: ${E.fecha_examen} | ${diasStr}
 
-📈 <b>PUNTAJE: ${total} / 120</b>
-🎯 Corte objetivo: ${E.corte} pts → ${statusMeta}
-${diasStr}
+━━━━━━━━━━━━━━━━━━━━━
+📈 <b>PUNTAJE: ${total}/128</b>
+🎯 Corte ${E.corte} pts → ${statusMeta}
+${urgencia}
+━━━━━━━━━━━━━━━━━━━━━
 
-<b>Por área:</b>
+📚 <b>POR ÁREA</b>
 ${areasStr}
-<b>Tiempo por pregunta:</b>
-${segsStr}
-⏱ Tiempo total: ${tiempoStr}
+💪 Fuerte: ${areasFuertes.join(', ')||'—'}
+❌ Débil: ${areasDebiles.join(', ')||'ninguna'}
 
-💰 Nivel de refuerzo sugerido: <b>Nivel ${nivel} — $${precio}</b>
+⏱ <b>VELOCIDAD</b>
+${velocidadStr}Tiempo total: ${tiempoStr}
 
-💬 <b>Feedback:</b>
-• Difícil: ${fb1}
-• Nivel: ${fb2}
-• Mejoras: ${fb3}
+━━━━━━━━━━━━━━━━━━━━━
+💰 <b>VENTA → Nivel ${nivel} · $${precio}</b>
+  ${pitch}
+━━━━━━━━━━━━━━━━━━━━━
 
-📅 ${new Date().toLocaleString('es-MX')}`;
+💬 <b>FEEDBACK</b>
+  😓 ${fb1}
+  📊 ${fb2}
+  🔧 ${fb3}
+
+🕐 ${new Date().toLocaleString('es-MX')}
+━━━━━━━━━━━━━━━━━━━━━`;
 
   await sendTelegram(mensaje);
   document.getElementById('sending-overlay').classList.remove('show');
@@ -1039,33 +1092,11 @@ function mostrarResultados(areas, total, tiempoStr, statusMeta, nivel, precio, p
   };
 
   const o = ofertaData[nivel];
-  const telAsesor = '5519261540'; // puedes cambiar esto
-  const msgWA = encodeURIComponent(`Hola, acabo de terminar el simulador PrepaSegura.\nAlumno: ${E.alumno}\nPuntaje: ${total}/120\nMeta: ${E.plantel_nombre}\nMe interesa el paquete Nivel ${nivel}.`);
+  const telAsesor = '5533763792'; // puedes cambiar esto
+  const msgWA = encodeURIComponent(`Hola, acabo de terminar el simulador PrepaSegura.\nAlumno: ${E.alumno}\nPuntaje: ${total}/128\nMeta: ${E.plantel_nombre}\nMe interesa el paquete Nivel ${nivel}.`);
   const waUrl = `https://wa.me/52${telAsesor}?text=${msgWA}`;
 
-  document.getElementById('bloque-oferta').style.display = 'block';
-  document.getElementById('oferta-contenido').innerHTML = `
-    <div class="oferta-card">
-      <div class="oferta-nivel">Plan recomendado · Nivel ${nivel}</div>
-      <div class="oferta-titulo">${o.titulo}</div>
-      <div class="oferta-desc">${o.desc}</div>
-      <div class="urgencia-bar">⏰ ${calcularDias().replace('⏳','')} para tu examen · Los lugares son limitados</div>
-      <div class="oferta-precio">
-        <span class="precio-actual">$${precio}</span>
-        <span class="precio-antes">Valor regular $${precio_antes}</span>
-      </div>
-      <div class="incluye-list">
-        ${o.incluye.map(i => `<div class="incluye-item"><span style="color:var(--verde)">✓</span>${i}</div>`).join('')}
-      </div>
-      <a href="${waUrl}" target="_blank" style="text-decoration:none;">
-        <button class="btn btn-verde" style="margin-top:0;">
-          📲 Quiero este plan — WhatsApp
-        </button>
-      </a>
-      <div style="text-align:center;font-size:11px;color:var(--gris);margin-top:10px;">
-        Tu asesor ya recibió tu diagnóstico completo · Respuesta en minutos
-      </div>
-    </div>`;
+  document.getElementById('bloque-oferta').style.display = 'none';
 
   document.getElementById('res-status').textContent = `Diagnóstico enviado · ${new Date().toLocaleString('es-MX')}`;
 }
