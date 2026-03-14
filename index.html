@@ -976,6 +976,9 @@ async function procesarResultados() {
     velocidadStr += `  • ${nombre}: ~${segProm}s → ${vel}\n`;
   });
 
+  const esDemo = E.tipo_acceso === 'demo';
+  const totalMax = esDemo ? 25 : 128;
+
   const diff = total - E.corte;
   const statusMeta = diff >= 5 ? '✅ MUY PROBABLE' : diff >= 0 ? '✅ EN RANGO' : diff >= -8 ? '⚠️ CERCA' : '❌ NECESITA REFUERZO';
   const ptsFaltantes = Math.max(0, E.corte - total);
@@ -984,7 +987,9 @@ async function procesarResultados() {
   const areasFuertes = Object.entries(areas).filter(([n,a]) => a.correctas/a.total >= 0.7).map(([n]) => n);
   const areasDebiles = Object.entries(areas).filter(([n,a]) => a.correctas/a.total < 0.6).map(([n]) => n);
 
-  const urgencia = ptsFaltantes === 0
+  const urgencia = esDemo
+    ? `🔍 Demo completado — diagnóstico orientativo`
+    : ptsFaltantes === 0
     ? `🏆 YA SUPERA EL CORTE por ${ptsExtra} pts`
     : ptsFaltantes <= 5
     ? `🔥 SOLO LE FALTAN ${ptsFaltantes} PTS — cierre fácil`
@@ -994,7 +999,9 @@ async function procesarResultados() {
 
   const gradoTexto = {'3sec':'3° secundaria','egresado':'Ya egresó','repite':'Ya presentó antes'}[E.grado] || E.grado;
 
-  const pitch = nivel === 1
+  const pitch = esDemo
+    ? `"Demo completado. Llámale HOY — ya vio el producto. Ofrece simulacro completo $300 o paquete."`
+    : nivel === 1
     ? `"Está a ${ptsFaltantes} pts. Con la guía de ${areasDebiles[0]||'refuerzo'} llega en 7 días. $299."`
     : nivel === 2
     ? `"Falló ${areasDebiles.length} materias (${areasDebiles.join(', ')}). Plan 10 días = $799."`
@@ -1005,7 +1012,43 @@ async function procesarResultados() {
   const telLimpio = E.tel.replace(/\D/g,'');
   const waLink = `https://wa.me/52${telLimpio}`;
 
-  const mensaje =
+  const mensaje = esDemo ?
+`━━━━━━━━━━━━━━━━━━━━━
+🔓 <b>PREPASEGURA — DEMO COMPLETADO</b>
+━━━━━━━━━━━━━━━━━━━━━
+
+👤 <b>ALUMNO</b>
+  ${E.alumno} | ${gradoTexto}
+  📧 ${E.correo || 'sin correo'}
+
+👨 <b>TUTOR/PAPÁ</b>
+  ${E.tutor}
+  📲 <a href="${waLink}">WhatsApp → ${E.tel}</a>
+
+🎫 Código: ${E.codigo} (DEMO 25 preg)
+🏫 Meta: <b>${E.plantel_nombre}</b>
+📅 ${diasStr}
+
+━━━━━━━━━━━━━━━━━━━━━
+📈 <b>DEMO: ${total}/${totalMax} preguntas</b>
+🎯 Rendimiento orientativo — no es puntaje final
+━━━━━━━━━━━━━━━━━━━━━
+
+📚 <b>POR ÁREA (muestra)</b>
+${areasStr}
+💪 Fuerte: ${areasFuertes.join(', ')||'—'}
+❌ Débil: ${areasDebiles.join(', ')||'ninguna'}
+
+⏱ Tiempo: ${tiempoStr}
+
+━━━━━━━━━━━━━━━━━━━━━
+🎯 <b>PRÓXIMO PASO</b>
+  ${pitch}
+━━━━━━━━━━━━━━━━━━━━━
+
+🕐 ${new Date().toLocaleString('es-MX')}
+━━━━━━━━━━━━━━━━━━━━━`
+  :
 `━━━━━━━━━━━━━━━━━━━━━
 📊 <b>PREPASEGURA — RESULTADO</b>
 ━━━━━━━━━━━━━━━━━━━━━
