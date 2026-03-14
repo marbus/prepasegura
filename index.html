@@ -999,6 +999,38 @@ ${velocidadStr}Tiempo total: ${tiempoStr}
 ━━━━━━━━━━━━━━━━━━━━━`;
 
   await sendTelegram(mensaje);
+
+  // Guardar resultado en Google Sheets
+  try {
+    const areasPuntos = {};
+    Object.entries(areas).forEach(([nombre, data]) => {
+      areasPuntos[nombre] = data.correctas;
+    });
+
+    const fechas = {
+      '20jun':new Date('2026-06-20'),'21jun':new Date('2026-06-21'),
+      '27jun':new Date('2026-06-27'),'28jun':new Date('2026-06-28'),
+      'nosé': new Date('2026-06-28')
+    };
+    const diasExamen = Math.ceil((fechas[E.fecha_examen||'nosé'] - new Date()) / (1000*60*60*24));
+
+    await apiCall({
+      action:       'guardar_resultado',
+      codigo:       E.codigo,
+      alumno:       E.alumno,
+      tutor:        E.tutor,
+      tel_tutor:    E.tel.replace(/\D/g,''),
+      meta:         E.plantel_nombre,
+      corte:        E.corte,
+      total:        total,
+      areas:        JSON.stringify(areasPuntos),
+      tiempo_seg:   E.tiempoUsado,
+      dias_examen:  diasExamen,
+      grado:        E.grado,
+      fecha_examen: E.fecha_examen,
+      nivel_venta:  nivel
+    });
+  } catch(e) { console.log('Resultado no guardado en Sheets:', e.message); }
   document.getElementById('sending-overlay').classList.remove('show');
   mostrarResultados(areas, total, tiempoStr, statusMeta, nivel, precio, precio_antes);
 }
