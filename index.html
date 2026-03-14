@@ -3,955 +3,1180 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>PrepaSegura · Control</title>
-<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=JetBrains+Mono:wght@300;400;600&display=swap" rel="stylesheet">
+<title>PrepaSegura — Simulador UNAM · IPN 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg:       #050810;
-  --surface:  #0c1220;
-  --surface2: #111d30;
-  --border:   #1a2f4a;
-  --border2:  #243a55;
-  --cyan:     #00e5ff;
-  --cyan2:    #0090a8;
-  --amber:    #ffab00;
-  --green:    #00e676;
-  --red:      #ff1744;
-  --muted:    #4a6080;
-  --text:     #cdd8e8;
-  --text2:    #8aa0bc;
-  --mono:     'JetBrains Mono', monospace;
-  --display:  'Rajdhani', sans-serif;
-}
+:root{--azul:#003d7a;--oro:#c8a84b;--oro-claro:#f0d080;--bg:#0a0f1e;--bg2:#111827;--bg3:#1a2235;--verde:#22c55e;--rojo:#ef4444;--amarillo:#f59e0b;--texto:#e8eaf0;--gris:#8892a4;--borde:#1e2d45;}
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{height:100%;overflow-x:hidden;}
-body{background:var(--bg);color:var(--text);font-family:var(--mono);min-height:100vh;}
+body{background:var(--bg);color:var(--texto);font-family:'DM Mono',monospace;min-height:100vh;overflow-x:hidden;}
+.screen{display:none;min-height:100vh;}
+.screen.active{display:flex;flex-direction:column;}
+.hdr{background:linear-gradient(135deg,#001830,#003d7a,#001830);border-bottom:2px solid var(--oro);padding:16px 20px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100;}
+.escudo{width:44px;height:44px;background:var(--oro);border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:13px;color:#001830;box-shadow:0 0 16px rgba(200,168,75,0.5);animation:glow 3s ease-in-out infinite;flex-shrink:0;}
+@keyframes glow{0%,100%{box-shadow:0 0 16px rgba(200,168,75,0.4);}50%{box-shadow:0 0 30px rgba(200,168,75,0.8);}}
+.hdr-titulo{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;}
+.hdr-titulo span{color:var(--oro);}
+.hdr-sub{font-size:10px;color:var(--gris);}
+.timer-box{background:var(--bg3);border:1px solid var(--borde);border-radius:8px;padding:6px 12px;text-align:center;min-width:90px;}
+.timer-val{font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--verde);letter-spacing:1px;transition:color 0.5s;}
+.timer-label{font-size:9px;color:var(--gris);text-transform:uppercase;letter-spacing:1px;}
+.content{flex:1;max-width:680px;width:100%;margin:0 auto;padding:24px 16px;}
+.card{background:var(--bg2);border:1px solid var(--borde);border-radius:16px;padding:24px;margin-bottom:20px;}
+.card-title{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:var(--oro-claro);margin-bottom:6px;}
+.card-sub{font-size:12px;color:var(--gris);margin-bottom:20px;line-height:1.6;}
+label{display:block;font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:6px;margin-top:14px;}
+input,select{width:100%;background:var(--bg3);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-family:'DM Mono',monospace;font-size:14px;padding:11px 14px;outline:none;transition:border-color 0.2s;-webkit-appearance:none;}
+input:focus,select:focus{border-color:var(--oro);}
+input::placeholder{color:var(--gris);}
+.code-input{font-family:'Syne',sans-serif;font-size:20px;font-weight:700;text-transform:uppercase;letter-spacing:4px;text-align:center;color:var(--oro);}
+.btn{width:100%;background:linear-gradient(135deg,var(--azul),#0056ae);border:1px solid var(--oro);color:var(--oro-claro);font-family:'Syne',sans-serif;font-size:14px;font-weight:700;padding:14px;border-radius:10px;cursor:pointer;letter-spacing:0.5px;text-transform:uppercase;transition:all 0.2s;margin-top:20px;display:block;}
+.btn:hover{box-shadow:0 4px 20px rgba(200,168,75,0.3);transform:translateY(-1px);}
+.btn:disabled{opacity:0.4;cursor:not-allowed;transform:none;}
+.btn-sm{width:auto;display:inline-block;padding:8px 20px;font-size:12px;margin-top:0;}
+.btn-ghost{background:transparent;border-color:var(--borde);color:var(--gris);}
+.btn-verde{background:linear-gradient(135deg,#166534,#15803d);border-color:#22c55e;color:#4ade80;}
+.btn-rojo{background:linear-gradient(135deg,#7f1d1d,#991b1b);border-color:#ef4444;color:#fca5a5;}
 
-/* ── GRID BG ── */
-body::before {
-  content:'';position:fixed;inset:0;
-  background-image:
-    linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events:none;z-index:0;
-}
+/* METAS GRID */
+.metas-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px;}
+.meta-opt{background:var(--bg3);border:2px solid var(--borde);border-radius:12px;padding:14px;cursor:pointer;transition:all 0.2s;text-align:center;}
+.meta-opt:hover{border-color:var(--oro);}
+.meta-opt.selected{border-color:var(--oro);background:rgba(200,168,75,0.08);}
+.meta-opt .inst{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:2px;margin-bottom:4px;}
+.meta-opt.unam .inst{color:#60a5fa;}
+.meta-opt.ipn .inst{color:#a78bfa;}
+.meta-opt .nombre{font-size:12px;color:var(--texto);font-weight:600;margin-bottom:2px;}
+.meta-opt .corte{font-size:10px;color:var(--oro);}
 
-/* ── AUTH ── */
-#auth-screen {
-  position:fixed;inset:0;z-index:100;
-  display:flex;align-items:center;justify-content:center;
-  background:var(--bg);
-}
-.auth-wrap {
-  width:100%;max-width:380px;padding:20px;
-  animation: fadeUp 0.5s ease both;
-}
-@keyframes fadeUp {
-  from{opacity:0;transform:translateY(20px);}
-  to{opacity:1;transform:translateY(0);}
-}
-.auth-brand {
-  text-align:center;margin-bottom:40px;
-}
-.auth-logo {
-  font-family:var(--display);
-  font-size:42px;font-weight:700;
-  letter-spacing:6px;
-  background:linear-gradient(135deg,var(--cyan),var(--cyan2));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  display:block;
-}
-.auth-sub {
-  font-size:11px;color:var(--muted);letter-spacing:3px;
-  text-transform:uppercase;margin-top:6px;
-}
-.auth-box {
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:4px;padding:32px;
-  position:relative;overflow:hidden;
-}
-.auth-box::before {
-  content:'';position:absolute;
-  top:0;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,var(--cyan),transparent);
-}
+/* PLANTEL ESPECÍFICO */
+.planteles-wrap{display:none;margin-top:10px;}
+.planteles-wrap.show{display:block;}
+.plantel-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;}
+.chip{background:var(--bg3);border:1px solid var(--borde);border-radius:20px;padding:6px 14px;font-size:11px;cursor:pointer;transition:all 0.2s;color:var(--gris);}
+.chip:hover{border-color:var(--oro);color:var(--oro);}
+.chip.selected{border-color:var(--oro);color:var(--oro);background:rgba(200,168,75,0.1);}
 
-/* PIN GRID */
-.pin-grid {
-  display:grid;grid-template-columns:repeat(4,1fr);gap:10px;
-  margin-bottom:20px;
-}
-.pin-key {
-  background:var(--surface2);
-  border:1px solid var(--border);
-  border-radius:4px;
-  padding:18px 8px;
-  text-align:center;
-  font-family:var(--display);
-  font-size:20px;font-weight:600;
-  color:var(--text);
-  cursor:pointer;
-  transition:all 0.1s;
-  user-select:none;
-  -webkit-tap-highlight-color:transparent;
-}
-.pin-key:hover{border-color:var(--cyan);color:var(--cyan);}
-.pin-key:active{background:rgba(0,229,255,0.1);transform:scale(0.95);}
-.pin-key.del{color:var(--amber);font-size:14px;}
-.pin-key.del:hover{border-color:var(--amber);color:var(--amber);}
-.pin-key.enter{
-  background:var(--cyan);color:var(--bg);
-  border-color:var(--cyan);
-  font-size:13px;font-weight:700;letter-spacing:1px;
-}
-.pin-key.enter:hover{background:#00b8cc;}
-.pin-key.enter:active{transform:scale(0.97);}
+.check-row{display:flex;align-items:flex-start;gap:12px;padding:12px;background:var(--bg3);border-radius:8px;cursor:pointer;margin-top:14px;}
+.chk{width:20px;height:20px;flex-shrink:0;border:2px solid var(--borde);border-radius:5px;margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all 0.2s;}
+.chk.checked{background:rgba(34,197,94,0.2);border-color:#22c55e;color:#4ade80;font-size:12px;}
+.check-txt{font-size:12px;color:var(--gris);line-height:1.6;}
+.msg{padding:10px 14px;border-radius:8px;font-size:12px;margin-top:12px;display:none;}
+.msg.error{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);color:#f87171;}
+.msg.ok{background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.3);color:#4ade80;}
+.msg.info{background:rgba(200,168,75,0.1);border:1px solid rgba(200,168,75,0.3);color:var(--oro);}
+.msg.show{display:block;}
 
-/* PIN DISPLAY */
-.pin-display {
-  display:flex;gap:10px;justify-content:center;
-  margin-bottom:24px;
-}
-.pin-dot {
-  width:12px;height:12px;
-  border-radius:50%;
-  border:2px solid var(--border2);
-  transition:all 0.2s;
-}
-.pin-dot.filled {
-  background:var(--cyan);
-  border-color:var(--cyan);
-  box-shadow:0 0 8px var(--cyan);
-}
-.pin-dot.error {
-  background:var(--red);
-  border-color:var(--red);
-  animation:shake 0.3s ease;
-}
-@keyframes shake {
-  0%,100%{transform:translateX(0);}
-  25%{transform:translateX(-4px);}
-  75%{transform:translateX(4px);}
-}
-.pin-label {
-  text-align:center;font-size:10px;color:var(--muted);
-  letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;
-}
+/* EXAMEN */
+.progress-wrap{background:var(--bg3);border-bottom:1px solid var(--borde);padding:10px 16px;}
+.progress-info{display:flex;justify-content:space-between;font-size:10px;color:var(--gris);margin-bottom:6px;}
+.progress-bar{height:4px;background:var(--bg2);border-radius:2px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--azul),var(--oro));transition:width 0.3s;}
+.area-badge{display:inline-flex;align-items:center;gap:6px;background:var(--bg3);border:1px solid var(--borde);border-radius:20px;padding:4px 12px;font-size:11px;color:var(--oro);margin-bottom:16px;font-family:'Syne',sans-serif;font-weight:600;}
+.pregunta-num{font-size:11px;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;}
+.pregunta-txt{font-size:15px;line-height:1.7;color:var(--texto);margin-bottom:20px;}
+.opciones{display:flex;flex-direction:column;gap:8px;}
+.opcion{background:var(--bg3);border:2px solid var(--borde);border-radius:10px;padding:12px 16px;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:12px;font-size:13px;line-height:1.5;}
+.opcion:hover{border-color:rgba(200,168,75,0.4);background:rgba(200,168,75,0.05);}
+.opcion.selected{border-color:var(--oro);background:rgba(200,168,75,0.1);}
+.opcion-letra{width:28px;height:28px;flex-shrink:0;border-radius:50%;border:1px solid var(--borde);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;color:var(--gris);}
+.opcion.selected .opcion-letra{border-color:var(--oro);color:var(--oro);}
+.nav-preguntas{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;}
+.nav-q{width:32px;height:32px;border-radius:6px;border:1px solid var(--borde);background:var(--bg3);color:var(--gris);font-size:11px;font-weight:700;cursor:pointer;transition:all 0.15s;display:flex;align-items:center;justify-content:center;}
+.nav-q.respondida{background:rgba(34,197,94,0.15);border-color:rgba(34,197,94,0.4);color:#4ade80;}
+.nav-q.actual{border-color:var(--oro);color:var(--oro);background:rgba(200,168,75,0.1);}
+.exam-nav{display:flex;gap:10px;margin-top:20px;}
+.exam-nav .btn{margin-top:0;}
 
-/* ── MAIN ── */
-#main-screen{display:none;min-height:100vh;position:relative;z-index:1;}
+/* RESULTADOS */
+.score-big{text-align:center;padding:24px 0;}
+.score-num{font-family:'Syne',sans-serif;font-size:64px;font-weight:800;color:var(--oro);text-shadow:0 0 30px rgba(200,168,75,0.4);line-height:1;}
+.score-total{font-size:18px;color:var(--gris);margin-top:4px;}
+.area-row{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--borde);}
+.area-nombre{width:130px;font-size:12px;flex-shrink:0;}
+.area-bar-wrap{flex:1;background:var(--bg3);border-radius:4px;height:8px;overflow:hidden;}
+.area-bar-fill{height:100%;border-radius:4px;transition:width 0.8s ease;}
+.area-pts{width:50px;text-align:right;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;flex-shrink:0;}
+.plantel-res{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;border-radius:10px;margin-bottom:8px;border:1px solid var(--borde);}
+.plantel-res.ok{background:rgba(34,197,94,0.08);border-color:rgba(34,197,94,0.3);}
+.plantel-res.cerca{background:rgba(245,158,11,0.08);border-color:rgba(245,158,11,0.3);}
+.plantel-res.no{background:rgba(239,68,68,0.05);border-color:rgba(239,68,68,0.2);}
 
-.topbar {
-  background:rgba(12,18,32,0.95);
-  border-bottom:1px solid var(--border);
-  padding:12px 20px;
-  display:flex;align-items:center;justify-content:space-between;
-  position:sticky;top:0;z-index:50;
-  backdrop-filter:blur(10px);
-}
-.topbar-brand {
-  display:flex;align-items:center;gap:12px;
-}
-.status-dot {
-  width:8px;height:8px;border-radius:50%;
-  background:var(--green);
-  box-shadow:0 0 8px var(--green);
-  animation:pulse2 2s infinite;
-}
-@keyframes pulse2 {
-  0%,100%{opacity:1;}50%{opacity:0.4;}
-}
-.brand-text {
-  font-family:var(--display);font-size:16px;font-weight:700;
-  letter-spacing:2px;color:var(--cyan);
-}
-.brand-ver {
-  font-size:9px;color:var(--muted);letter-spacing:1px;
-  margin-top:1px;
-}
-.topbar-time {
-  font-size:11px;color:var(--muted);letter-spacing:1px;
-}
+/* P4 OFERTA */
+.oferta-card{background:linear-gradient(135deg,#0d1f0d,#1a2e1a);border:2px solid var(--verde);border-radius:16px;padding:24px;margin-bottom:16px;position:relative;overflow:hidden;}
+.oferta-card::before{content:'';position:absolute;top:-50%;right:-50%;width:200%;height:200%;background:radial-gradient(circle,rgba(34,197,94,0.05) 0%,transparent 70%);pointer-events:none;}
+.oferta-nivel{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;letter-spacing:3px;color:var(--verde);text-transform:uppercase;margin-bottom:8px;}
+.oferta-titulo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;margin-bottom:8px;line-height:1.3;}
+.oferta-desc{font-size:12px;color:var(--gris);line-height:1.7;margin-bottom:16px;}
+.oferta-precio{display:flex;align-items:baseline;gap:8px;margin-bottom:16px;}
+.precio-actual{font-family:'Syne',sans-serif;font-size:36px;font-weight:800;color:var(--verde);}
+.precio-antes{font-size:14px;color:var(--gris);text-decoration:line-through;}
+.incluye-list{margin-bottom:16px;}
+.incluye-item{font-size:12px;color:var(--texto);padding:4px 0;display:flex;align-items:center;gap:8px;}
+.urgencia-bar{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:10px 14px;font-size:11px;color:#f87171;margin-bottom:16px;text-align:center;}
 
-/* TABS */
-.tabs {
-  display:flex;
-  border-bottom:1px solid var(--border);
-  background:var(--surface);
-}
-.tab {
-  flex:1;padding:14px 8px;
-  text-align:center;font-size:10px;font-weight:600;
-  font-family:var(--display);letter-spacing:2px;text-transform:uppercase;
-  color:var(--muted);cursor:pointer;
-  border-bottom:2px solid transparent;
-  transition:all 0.2s;
-}
-.tab:hover{color:var(--text2);}
-.tab.active{color:var(--cyan);border-bottom-color:var(--cyan);}
+/* MODAL CONFIRMACION */
+.modal-overlay{position:fixed;inset:0;background:rgba(10,15,30,0.95);display:none;align-items:center;justify-content:center;z-index:200;padding:20px;}
+.modal-overlay.show{display:flex;}
+.modal-box{background:var(--bg2);border:2px solid var(--oro);border-radius:20px;padding:28px;max-width:400px;width:100%;}
+.modal-titulo{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:var(--oro-claro);margin-bottom:12px;}
+.modal-txt{font-size:13px;color:var(--gris);line-height:1.7;margin-bottom:20px;}
+.modal-btns{display:flex;gap:10px;}
+.modal-btns .btn{margin-top:0;}
 
-/* SECTIONS */
-.section{display:none;padding:20px;max-width:720px;margin:0 auto;}
-.section.active{display:block;}
-
-/* CARDS */
-.card {
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:4px;padding:20px;
-  margin-bottom:16px;
-  position:relative;overflow:hidden;
-}
-.card::before {
-  content:'';position:absolute;
-  top:0;left:0;width:3px;height:100%;
-  background:linear-gradient(180deg,var(--cyan),transparent);
-}
-.card-title {
-  font-family:var(--display);font-size:12px;font-weight:700;
-  color:var(--cyan);text-transform:uppercase;letter-spacing:3px;
-  margin-bottom:16px;padding-left:8px;
-}
-
-/* STATS */
-.stats-grid {display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
-.stat-box {
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:4px;padding:16px;text-align:center;
-}
-.stat-num {
-  font-family:var(--display);font-size:36px;font-weight:700;
-  color:var(--cyan);line-height:1;
-}
-.stat-label {
-  font-size:9px;color:var(--muted);letter-spacing:2px;
-  text-transform:uppercase;margin-top:6px;
-}
-
-/* ECOEMS COUNTDOWN */
-.countdown-box {
-  background:var(--surface2);border:1px solid var(--amber);
-  border-radius:4px;padding:24px;text-align:center;margin-bottom:16px;
-}
-.countdown-num {
-  font-family:var(--display);font-size:72px;font-weight:700;
-  color:var(--amber);line-height:1;
-  text-shadow:0 0 30px rgba(255,171,0,0.4);
-}
-.countdown-label {
-  font-size:10px;color:var(--muted);letter-spacing:3px;
-  text-transform:uppercase;margin-top:8px;
-}
-
-/* FORM */
-.field{margin-bottom:14px;}
-.field-label {
-  font-size:9px;color:var(--muted);letter-spacing:2px;
-  text-transform:uppercase;margin-bottom:8px;display:block;
-}
-.field input,.field select {
-  width:100%;background:var(--surface2);
-  border:1px solid var(--border);border-radius:4px;
-  padding:12px 14px;color:var(--text);
-  font-family:var(--mono);font-size:13px;
-  outline:none;transition:border-color 0.2s;
-  -webkit-appearance:none;
-}
-.field input:focus,.field select:focus{border-color:var(--cyan);}
-.field select option{background:var(--surface2);}
-.field-note{font-size:9px;color:var(--muted);margin-top:4px;letter-spacing:1px;}
-
-/* CODE INPUT */
-.code-input-wrap {display:flex;gap:8px;align-items:stretch;}
-.code-input-wrap input {
-  font-family:var(--display);font-size:22px;font-weight:700;
-  letter-spacing:4px;text-transform:uppercase;flex:1;
-  color:var(--cyan);
-}
-.regen-btn {
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:4px;padding:0 14px;
-  color:var(--green);cursor:pointer;font-size:16px;
-  transition:all 0.2s;white-space:nowrap;
-}
-.regen-btn:hover{border-color:var(--green);}
-
-/* BTN */
-.btn {
-  width:100%;padding:14px;border:none;border-radius:4px;
-  font-family:var(--display);font-size:14px;font-weight:700;
-  letter-spacing:2px;text-transform:uppercase;
-  cursor:pointer;transition:all 0.2s;margin-top:12px;
-}
-.btn-primary {
-  background:var(--cyan);color:var(--bg);
-}
-.btn-primary:hover{background:#00b8cc;box-shadow:0 0 20px rgba(0,229,255,0.3);}
-.btn-primary:active{transform:scale(0.98);}
-.btn-sm{width:auto;padding:7px 14px;font-size:11px;margin-top:0;}
-.btn-ghost{background:transparent;border:1px solid var(--border);color:var(--muted);}
-.btn-ghost:hover{border-color:var(--cyan);color:var(--cyan);}
-.btn-danger{background:transparent;border:1px solid var(--red);color:var(--red);padding:7px 14px;font-size:10px;}
-.btn-danger:hover{background:rgba(255,23,68,0.1);}
-.btn-success{background:transparent;border:1px solid var(--green);color:var(--green);padding:7px 14px;font-size:10px;}
-.btn-success:hover{background:rgba(0,230,118,0.1);}
-
-/* BADGE */
-.badge{
-  display:inline-block;padding:3px 8px;border-radius:2px;
-  font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;
-  font-family:var(--display);
-}
-.badge-activo  {background:rgba(0,230,118,0.1);color:var(--green);border:1px solid rgba(0,230,118,0.3);}
-.badge-agotado {background:rgba(255,23,68,0.1);color:var(--red);border:1px solid rgba(255,23,68,0.3);}
-.badge-inactivo{background:rgba(74,96,128,0.2);color:var(--muted);border:1px solid var(--border);}
-.badge-expirado{background:rgba(255,171,0,0.1);color:var(--amber);border:1px solid rgba(255,171,0,0.3);}
-
-/* CODIGO ROW */
-.codigo-row {
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:4px;padding:14px;margin-bottom:10px;
-  transition:border-color 0.2s;
-}
-.codigo-row:hover{border-color:var(--border2);}
-.codigo-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
-.codigo-val{
-  font-family:var(--display);font-size:18px;font-weight:700;
-  color:var(--cyan);letter-spacing:3px;
-}
-.codigo-meta{font-size:10px;color:var(--muted);margin-bottom:3px;letter-spacing:0.5px;}
-.codigo-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;}
-
-/* RESULTADO GENERADO */
-.result-box {
-  display:none;
-  background:rgba(0,230,118,0.05);
-  border:1px solid rgba(0,230,118,0.2);
-  border-radius:4px;padding:20px;
-  text-align:center;margin-top:16px;
-  animation:fadeUp 0.3s ease;
-}
-.result-code {
-  font-family:var(--display);font-size:32px;font-weight:700;
-  color:var(--green);letter-spacing:6px;
-  text-shadow:0 0 20px rgba(0,230,118,0.4);
-  margin:8px 0;
-}
-.result-meta{font-size:11px;color:var(--muted);margin:4px 0;}
-.result-actions{display:flex;gap:8px;justify-content:center;margin-top:14px;flex-wrap:wrap;}
-
-/* TOAST */
-.toast {
-  position:fixed;bottom:24px;left:50%;
-  transform:translateX(-50%) translateY(80px);
-  background:var(--surface2);
-  border:1px solid var(--border2);
-  border-radius:4px;padding:12px 20px;
-  font-size:12px;color:var(--text);
-  z-index:999;transition:transform 0.3s;
-  white-space:nowrap;letter-spacing:0.5px;
-}
-.toast.show{transform:translateX(-50%) translateY(0);}
-.toast.ok{border-color:var(--green);color:var(--green);}
-.toast.err{border-color:var(--red);color:var(--red);}
-
-/* ── LAYOUT ADAPTATIVO ── */
-.main-layout {
-  display: grid;
-  grid-template-columns: 1fr;
-  min-height: calc(100vh - 110px);
-}
-
-/* Desktop: sidebar de tabs + contenido lado a lado */
-@media(min-width: 768px) {
-  .tabs {
-    flex-direction: column;
-    width: 180px;
-    min-height: calc(100vh - 56px);
-    border-right: 1px solid var(--border);
-    border-bottom: none;
-    position: fixed;
-    top: 56px;
-    left: 0;
-    background: var(--surface);
-    z-index: 40;
-  }
-  .tab {
-    text-align: left;
-    padding: 18px 20px;
-    border-bottom: none;
-    border-left: 2px solid transparent;
-    border-right: none;
-    font-size: 11px;
-  }
-  .tab.active {
-    border-left-color: var(--cyan);
-    border-bottom-color: transparent;
-    background: rgba(0,229,255,0.05);
-  }
-  .main-content {
-    margin-left: 180px;
-  }
-  .section {
-    max-width: 100%;
-    padding: 24px 32px;
-  }
-  .stats-grid {
-    grid-template-columns: repeat(4,1fr);
-  }
-  .dashboard-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  .dashboard-grid .countdown-box {
-    margin-bottom: 0;
-  }
-  .crear-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 16px;
-  }
-  .crear-grid .field:first-child {
-    grid-column: 1/-1;
-  }
-}
-
-/* Large desktop */
-@media(min-width: 1200px) {
-  .tabs { width: 220px; }
-  .main-content { margin-left: 220px; }
-  .section { max-width: 1000px; padding: 28px 40px; }
-  .stats-grid { gap: 16px; }
-}
-
-/* Mobile */
-@media(max-width: 767px) {
-  .topbar { padding: 10px 16px; }
-  .brand-text { font-size: 14px; }
-  .section { padding: 16px; }
-  .stats-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
-  .stat-num { font-size: 28px; }
-  .countdown-num { font-size: 56px; }
-  .pin-grid { gap: 8px; }
-  .pin-key { padding: 16px 6px; font-size: 18px; }
-  .result-actions { flex-direction: column; }
-  .result-actions button { width: 100%; }
-}
-
-/* Tablet */
-@media(min-width: 480px) and (max-width: 767px) {
-  .stats-grid { grid-template-columns: repeat(4,1fr); }
-}
-.spinner{
-  width:28px;height:28px;margin:0 auto 12px;
-  border:2px solid var(--border);border-top-color:var(--cyan);
-  border-radius:50%;animation:spin 0.7s linear infinite;
-}
+.sending-overlay{position:fixed;inset:0;background:rgba(10,15,30,0.9);display:none;align-items:center;justify-content:center;z-index:999;flex-direction:column;gap:16px;}
+.sending-overlay.show{display:flex;}
+.spinner{width:48px;height:48px;border:3px solid var(--borde);border-top-color:var(--oro);border-radius:50%;animation:spin 0.8s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-
-/* REFRESH BAR */
-.list-header{
-  display:flex;justify-content:space-between;align-items:center;
-  margin-bottom:16px;
-}
-.list-title{font-family:var(--display);font-size:11px;color:var(--muted);letter-spacing:2px;text-transform:uppercase;}
+.alert-tiempo{position:fixed;top:70px;left:50%;transform:translateX(-50%);background:var(--rojo);color:#fff;font-family:'Syne',sans-serif;font-size:13px;font-weight:700;padding:8px 20px;border-radius:8px;display:none;z-index:200;}
+textarea{width:100%;background:var(--bg3);border:1px solid var(--borde);border-radius:8px;color:var(--texto);font-family:'DM Mono',monospace;font-size:13px;padding:12px 14px;outline:none;resize:vertical;min-height:100px;transition:border-color 0.2s;}
+textarea:focus{border-color:var(--oro);}
+@media(max-width:480px){.score-num{font-size:52px;}.area-nombre{width:100px;font-size:11px;}.metas-grid{grid-template-columns:1fr 1fr;}}
 </style>
 </head>
 <body>
 
-<!-- ═══════════════════ AUTH ═══════════════════ -->
-<div id="auth-screen">
-  <div class="auth-wrap">
-    <div class="auth-brand">
-      <span class="auth-logo">PREPASEGURA</span>
-      <span class="auth-sub">Control Panel · Acceso restringido</span>
+<div class="alert-tiempo" id="alert-tiempo">⚠️ ¡10 minutos restantes!</div>
+
+<div class="sending-overlay" id="sending-overlay">
+  <div class="spinner"></div>
+  <div style="font-family:'Syne',sans-serif;font-size:14px;color:var(--oro);">Procesando resultados...</div>
+</div>
+
+<!-- MODAL CONFIRMACIÓN INICIO -->
+<div class="modal-overlay" id="modal-inicio">
+  <div class="modal-box">
+    <div class="modal-titulo">⚠️ ¿Listo para comenzar?</div>
+    <div class="modal-txt">
+      Una vez que inicies el simulacro <strong style="color:var(--oro)">no podrás pausarlo</strong>.<br><br>
+      Tienes <strong>3 horas exactas</strong> para responder 128 reactivos diagnósticos.<br><br>
+      El examen real ECOEMS tiene 128 preguntas — este simulacro mide exactamente en qué materias estás bien y dónde necesitas refuerzo.<br><br>
+      Asegúrate de estar en un lugar tranquilo con buena conexión a internet.
     </div>
-    <div class="auth-box">
-      <div class="pin-label">INGRESA TU PIN</div>
-      <div class="pin-display" id="pin-display">
-        <div class="pin-dot" id="d0"></div>
-        <div class="pin-dot" id="d1"></div>
-        <div class="pin-dot" id="d2"></div>
-        <div class="pin-dot" id="d3"></div>
-        <div class="pin-dot" id="d4"></div>
-        <div class="pin-dot" id="d5"></div>
-      </div>
-      <div class="pin-grid">
-        <div class="pin-key" onclick="addPin('1')">1</div>
-        <div class="pin-key" onclick="addPin('2')">2</div>
-        <div class="pin-key" onclick="addPin('3')">3</div>
-        <div class="pin-key" onclick="addPin('4')">4</div>
-        <div class="pin-key" onclick="addPin('5')">5</div>
-        <div class="pin-key" onclick="addPin('6')">6</div>
-        <div class="pin-key" onclick="addPin('7')">7</div>
-        <div class="pin-key" onclick="addPin('8')">8</div>
-        <div class="pin-key" onclick="addPin('9')">9</div>
-        <div class="pin-key del" onclick="delPin()">⌫</div>
-        <div class="pin-key" onclick="addPin('0')">0</div>
-        <div class="pin-key enter" onclick="doLogin()">OK</div>
-      </div>
+    <div class="modal-btns">
+      <button class="btn btn-ghost btn-sm" onclick="cerrarModal()">← Esperar</button>
+      <button class="btn btn-sm" onclick="confirmarInicio()" style="flex:1">¡Comenzar ahora!</button>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════ MAIN ═══════════════════ -->
-<div id="main-screen">
-  <div class="topbar">
-    <div class="topbar-brand">
-      <div class="status-dot"></div>
+<!-- ======================================================== -->
+<!-- PANTALLA 1: CÓDIGO -->
+<!-- ======================================================== -->
+<div id="s-codigo" class="screen active">
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="escudo">PS</div>
       <div>
-        <div class="brand-text">PREPASEGURA</div>
-        <div class="brand-ver">ADMIN · v3.0 · ECOEMS 2026</div>
+        <div class="hdr-titulo">Prepa<span>Segura</span></div>
+        <div class="hdr-sub">Simulador UNAM · IPN 2026</div>
       </div>
     </div>
-    <div class="topbar-time" id="topbar-time">--:--:--</div>
   </div>
-
-  <div class="tabs">
-    <div class="tab active" onclick="switchTab('dashboard',this)">◈ Stats</div>
-    <div class="tab" onclick="switchTab('crear',this)">+ Crear</div>
-    <div class="tab" onclick="switchTab('codigos',this)">⌗ Códigos</div>
-  </div>
-
-  <div class="main-content">
-  <!-- DASHBOARD -->
-  <div id="tab-dashboard" class="section active">
-    <div id="stats-container"><div class="loading"><div class="spinner"></div>CARGANDO...</div></div>
-    <div style="margin-top:8px;">
-      <button class="btn btn-ghost" style="border-color:var(--cyan);color:var(--cyan);font-size:11px;padding:10px;" onclick="crearPrueba()">
-        🧪 CREAR CÓDIGO DE PRUEBA RÁPIDA
-      </button>
-    </div>
-  </div>
-
-  <!-- CREAR -->
-  <div id="tab-crear" class="section">
+  <div class="content">
     <div class="card">
-      <div class="card-title">Nuevo Código de Acceso</div>
-      <div class="crear-grid">
-      <div class="field">
-        <label class="field-label">Nombre del Alumno</label>
-        <input type="text" id="new-alumno" placeholder="Nombre completo" oninput="sugerirCodigo(this.value)">
-      </div>
-
-      <div class="field">
-        <label class="field-label">Código <span style="color:var(--green);font-size:9px;">● AUTO</span></label>
-        <div class="code-input-wrap">
-          <input type="text" id="new-codigo" placeholder="———" maxlength="8"
-                 oninput="this.value=this.value.replace(/[^A-Z0-9]/g,'').toUpperCase()">
-          <button class="regen-btn" onclick="regenerarCodigo()" title="Generar nuevo">🔄</button>
-        </div>
-        <div class="field-note">Máx 8 · Solo letras y números · Sin símbolos</div>
-      </div>
-
-      <div class="field">
-        <label class="field-label">Tutor / Papá / Mamá</label>
-        <input type="text" id="new-tutor" placeholder="Nombre del responsable">
-      </div>
-
-      <div class="field">
-        <label class="field-label">WhatsApp del Tutor</label>
-        <input type="tel" id="new-tel" placeholder="5512345678">
-      </div>
-
-      <div class="field">
-        <label class="field-label">Tipo de Acceso</label>
-        <select id="new-tipo">
-          <option value="simulacro">Simulacro Completo — 128 preguntas ECOEMS</option>
-          <option value="matematicas">Módulo Matemáticas</option>
-          <option value="espanol">Módulo Español</option>
-          <option value="ciencias">Módulo Ciencias</option>
-          <option value="paquete5">Paquete 5 Días</option>
-          <option value="beta">Beta Tester</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label class="field-label">Vigencia desde activación</label>
-        <select id="new-horas">
-          <option value="12">12 horas</option>
-          <option value="24">24 horas</option>
-          <option value="48" selected>48 horas</option>
-          <option value="72">3 días</option>
-          <option value="120">5 días</option>
-          <option value="168">1 semana</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label class="field-label">Usos permitidos</label>
-        <select id="new-usos">
-          <option value="1">1 uso — recomendado</option>
-          <option value="3">3 usos</option>
-          <option value="5">5 usos — paquete</option>
-        </select>
-      </div>
-      </div><!-- /crear-grid -->
-
-      <button class="btn btn-primary" onclick="crearCodigo()">⚡ GENERAR CÓDIGO</button>
-
-      <div class="result-box" id="result-box">
-        <div style="font-size:9px;color:var(--muted);letter-spacing:2px;">CÓDIGO GENERADO ✓</div>
-        <div class="result-code" id="res-codigo">—</div>
-        <div class="result-meta" id="res-alumno">—</div>
-        <div class="result-meta" id="res-expiry">—</div>
-        <div class="result-actions">
-          <button class="btn btn-success btn-sm" onclick="copiarMensaje()">📋 Copiar WA</button>
-          <button class="btn btn-primary btn-sm" onclick="compartirWhatsApp()">📲 Abrir WA</button>
-        </div>
+      <div class="card-title">🎫 Código de acceso</div>
+      <div class="card-sub">Ingresa el código que te proporcionó tu asesor. Cada código es personal e intransferible.</div>
+      <label>Tu código</label>
+      <input type="text" class="code-input" id="input-codigo" placeholder="XXXX0000" maxlength="12"
+             oninput="this.value=this.value.toUpperCase()" autocomplete="off" spellcheck="false">
+      <div class="msg" id="msg-codigo"></div>
+      <button class="btn" id="btn-validar" onclick="validarCodigo()">Validar código →</button>
+      <div style="margin-top:16px;text-align:center;font-size:11px;color:var(--gris);">
+        ¿No tienes código? Contacta a tu asesor por WhatsApp
       </div>
     </div>
-  </div>
-
-  <!-- CÓDIGOS -->
-  <div id="tab-codigos" class="section">
-    <div class="list-header">
-      <div class="list-title">⌗ Todos los Códigos</div>
-      <button class="btn btn-ghost btn-sm" onclick="cargarCodigos()">↻ Refresh</button>
+    <div style="text-align:center;font-size:10px;color:var(--gris);padding-bottom:20px;">
+      Simulacro diagnóstico · 128 reactivos · 3 horas<br>
+      Basado en temario ECOEMS 2026 · UNAM + IPN
     </div>
-    <div id="codigos-lista"><div class="loading"><div class="spinner"></div>CARGANDO...</div></div>
   </div>
-  </div><!-- /main-content -->
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- ======================================================== -->
+<!-- PANTALLA 2: REGISTRO -->
+<!-- ======================================================== -->
+<div id="s-registro" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="escudo">PS</div>
+      <div>
+        <div class="hdr-titulo">Prepa<span>Segura</span></div>
+        <div class="hdr-sub">Registro del aspirante</div>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">👤 Datos del aspirante</div>
+      <div class="card-sub">Completa todos los campos. Tu resultado se enviará a tu asesor para darte seguimiento personalizado.</div>
+
+      <label>Nombre completo del alumno *</label>
+      <input type="text" id="reg-alumno" placeholder="Nombre completo">
+
+      <label>Correo del alumno</label>
+      <input type="email" id="reg-correo" placeholder="correo@gmail.com">
+
+      <label>Nombre del tutor / papá / mamá *</label>
+      <input type="text" id="reg-tutor" placeholder="Nombre completo del responsable">
+
+      <label>WhatsApp del tutor *</label>
+      <input type="tel" id="reg-tel" placeholder="55 XXXX XXXX">
+
+      <label>Grado actual *</label>
+      <select id="reg-grado">
+        <option value="">Selecciona...</option>
+        <option value="3sec">Estoy en 3° de secundaria</option>
+        <option value="egresado">Ya terminé la secundaria</option>
+        <option value="repite">Ya presenté el examen antes</option>
+      </select>
+
+      <label>¿Cuál es tu meta? *</label>
+      <div class="metas-grid">
+        <div class="meta-opt unam" onclick="selMeta('ENP9')">
+          <div class="inst">UNAM</div>
+          <div class="nombre">Prepa 9</div>
+          <div class="corte">Corte: ~109 pts</div>
+        </div>
+        <div class="meta-opt unam" onclick="selMeta('ENP3')">
+          <div class="inst">UNAM</div>
+          <div class="nombre">Prepa 3</div>
+          <div class="corte">Corte: ~104 pts</div>
+        </div>
+        <div class="meta-opt ipn" onclick="selMeta('VOCA10')">
+          <div class="inst">IPN</div>
+          <div class="nombre">Voca 10</div>
+          <div class="corte">Corte: ~85 pts</div>
+        </div>
+        <div class="meta-opt ipn" onclick="selMeta('VOCA9')">
+          <div class="inst">IPN</div>
+          <div class="nombre">Voca 9</div>
+          <div class="corte">Corte: ~105 pts</div>
+        </div>
+        <div class="meta-opt unam" onclick="selMeta('CCH')">
+          <div class="inst">UNAM</div>
+          <div class="nombre">CCH</div>
+          <div class="corte">Corte: ~95 pts</div>
+        </div>
+        <div class="meta-opt ipn" onclick="selMeta('OTRA')">
+          <div class="inst">IPN</div>
+          <div class="nombre">Otra Voca</div>
+          <div class="corte">Corte: 82–94 pts</div>
+        </div>
+      </div>
+
+      <label>¿Ya sabes tu fecha de examen?</label>
+      <select id="reg-fecha">
+        <option value="nosé">Aún no me asignan fecha</option>
+        <option value="20jun">Sábado 20 de junio</option>
+        <option value="21jun">Domingo 21 de junio</option>
+        <option value="27jun">Sábado 27 de junio</option>
+        <option value="28jun">Domingo 28 de junio</option>
+      </select>
+
+      <div class="check-row" id="check-row" onclick="toggleCheck()">
+        <div class="chk" id="chk-icon"></div>
+        <div class="check-txt">Entiendo que una vez que inicie el examen no podré pausarlo. Me comprometo a completarlo y dar feedback honesto al finalizar.</div>
+      </div>
+
+      <div class="msg" id="msg-registro"></div>
+      <button class="btn" onclick="mostrarModalInicio()">Comenzar examen →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- PANTALLA 3: EXAMEN -->
+<!-- ======================================================== -->
+<div id="s-examen" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="escudo">PS</div>
+      <div>
+        <div class="hdr-titulo" id="hdr-nombre">Aspirante</div>
+        <div class="hdr-sub" id="hdr-meta">Meta: —</div>
+      </div>
+    </div>
+    <div class="timer-box">
+      <div class="timer-val" id="timer-display">3:00:00</div>
+      <div class="timer-label">tiempo</div>
+    </div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-info">
+      <span id="prog-texto">Pregunta 1 de 128</span>
+      <span id="prog-resp">0 respondidas</span>
+    </div>
+    <div class="progress-bar"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+  </div>
+  <div class="content">
+    <div class="card" style="padding:16px;">
+      <div style="font-size:10px;color:var(--gris);text-transform:uppercase;letter-spacing:1px;margin-bottom:10px;">Navegación rápida</div>
+      <div class="nav-preguntas" id="nav-preguntas"></div>
+    </div>
+    <div class="card" id="card-pregunta">
+      <div class="area-badge" id="area-badge">📐 Área</div>
+      <div class="pregunta-num" id="pregunta-num">Pregunta 1</div>
+      <div class="pregunta-txt" id="pregunta-txt">Cargando...</div>
+      <div class="opciones" id="opciones-wrap"></div>
+      <div class="exam-nav">
+        <button class="btn btn-ghost btn-sm" onclick="navPregunta(-1)">← Anterior</button>
+        <button class="btn btn-sm" onclick="navPregunta(1)" id="btn-siguiente">Siguiente →</button>
+      </div>
+    </div>
+    <button class="btn btn-verde" onclick="confirmarFinalizar()">✓ Finalizar examen</button>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- PANTALLA 4: FEEDBACK -->
+<!-- ======================================================== -->
+<div id="s-feedback" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="escudo">PS</div>
+      <div>
+        <div class="hdr-titulo">¡Examen <span>completado!</span></div>
+        <div class="hdr-sub">Un paso más para ver tu resultado</div>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="card-title">💬 Tu opinión importa</div>
+      <div class="card-sub">Comprometiste dar feedback honesto. Completa esto para desbloquear tu resultado detallado.</div>
+      <label>¿Qué área te resultó más difícil y por qué?</label>
+      <textarea id="fb-dificil" placeholder="Ej: Química, especialmente balanceo de ecuaciones..."></textarea>
+      <label>¿El nivel de dificultad te pareció similar al examen real?</label>
+      <textarea id="fb-nivel" placeholder="Tu percepción honesta del nivel de dificultad..."></textarea>
+      <label>¿Qué mejorarías del simulador?</label>
+      <textarea id="fb-mejora" placeholder="Sugerencias, errores encontrados, lo que sea..."></textarea>
+      <div class="msg" id="msg-feedback"></div>
+      <button class="btn" onclick="procesarResultados()">Ver mi resultado completo →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ======================================================== -->
+<!-- PANTALLA 5: RESULTADOS -->
+<!-- ======================================================== -->
+<div id="s-resultados" class="screen">
+  <div class="hdr">
+    <div style="display:flex;align-items:center;gap:12px;">
+      <div class="escudo">PS</div>
+      <div>
+        <div class="hdr-titulo">Tus <span>Resultados</span></div>
+        <div class="hdr-sub" id="res-sub">Simulador UNAM · IPN 2026</div>
+      </div>
+    </div>
+  </div>
+  <div class="content">
+    <div class="card">
+      <div class="score-big">
+        <div class="score-num" id="res-score">—</div>
+        <div class="score-total">de 128 aciertos</div>
+        <div style="margin-top:8px;font-size:13px;color:var(--gris);" id="res-tiempo"></div>
+        <div style="margin-top:4px;font-size:12px;color:var(--oro);" id="res-dias"></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">📊 Desglose por área</div>
+      <div id="res-areas" style="margin-top:8px;"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">🏫 Tu probabilidad por plantel</div>
+      <div id="res-planteles" style="margin-top:8px;"></div>
+    </div>
+    <div class="card" id="res-tips-card">
+      <div class="card-title">💡 Áreas de oportunidad</div>
+      <div id="res-tips"></div>
+    </div>
+
+    <!-- P4: OFERTA -->
+    <div id="bloque-oferta" style="display:none;">
+      <div style="font-family:'Syne',sans-serif;font-size:13px;color:var(--gris);text-align:center;margin-bottom:16px;letter-spacing:1px;">
+        ── TU PLAN DE ACCIÓN ──
+      </div>
+      <div id="oferta-contenido"></div>
+    </div>
+
+    <div style="text-align:center;padding:24px 0;">
+      <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;color:var(--verde);margin-bottom:8px;">
+        ✅ Diagnóstico enviado a tu asesor
+      </div>
+      <div style="font-size:13px;color:var(--gris);line-height:1.8;margin-bottom:16px;">
+        Tu asesor ya tiene tu fotografía completa.<br>
+        En breve te contactará con tu plan personalizado.
+      </div>
+      <div style="font-size:11px;color:var(--gris);" id="res-status"></div>
+    </div>
+  </div>
+</div>
 
 <script>
-// ══════════════ CONFIG ══════════════
+// ============================================================
+// CONFIG API
+// ============================================================
 const API_URL = "https://script.google.com/macros/s/AKfycbwGA2KAVGGH9Zgb1n6SR9_UrrcBJtWuN_tWPN5ZBfCWTdJn_7vkMGwsXB8ZAygUxBeHsA/exec";
-const SECRET  = "PS2026zova";
-const PIN     = "260326"; // PIN numérico — cambia esto
+const API_SECRET = "PS2026zova";
+const TG_TOKEN = '8795924117:AAH_Rexj8W7NHtUpajlCAicRYM8xBC3qI4k';
+const TG_CHATS = ['7337705861','814061679'];
 
-let lastCreated = null;
-let codigosCache = null;
-let pinBuffer = "";
-
-// ══════════════ PIN LOGIN ══════════════
-function addPin(n) {
-  if (pinBuffer.length >= 6) return;
-  pinBuffer += n;
-  renderDots();
-  if (pinBuffer.length === 6) setTimeout(doLogin, 200);
-}
-
-function delPin() {
-  pinBuffer = pinBuffer.slice(0,-1);
-  renderDots();
-}
-
-function renderDots() {
-  for (let i=0;i<6;i++) {
-    const d = document.getElementById('d'+i);
-    d.className = 'pin-dot' + (i < pinBuffer.length ? ' filled' : '');
-  }
-}
-
-function doLogin() {
-  if (pinBuffer === PIN) {
-    document.getElementById('auth-screen').style.display = 'none';
-    document.getElementById('main-screen').style.display = 'block';
-    cargarTodo();
-    updateTime();
-    setInterval(updateTime, 1000);
-  } else {
-    // Error visual
-    for (let i=0;i<6;i++) {
-      const d = document.getElementById('d'+i);
-      d.className = 'pin-dot error';
-    }
-    setTimeout(() => { pinBuffer = ''; renderDots(); }, 700);
-    toast("PIN incorrecto", "err");
-  }
-}
-
-// Teclado físico también funciona
-document.addEventListener('keydown', e => {
-  if (!document.getElementById('auth-screen').style.display ||
-      document.getElementById('auth-screen').style.display !== 'none') {
-    if (e.key >= '0' && e.key <= '9') addPin(e.key);
-    if (e.key === 'Backspace') delPin();
-    if (e.key === 'Enter') doLogin();
-  }
-});
-
-// ══════════════ API ══════════════
-function apiCall(params, timeoutMs=15000) {
+function apiCall(params) {
   return new Promise((resolve, reject) => {
-    const cb = 'cb_' + Date.now() + '_' + Math.random().toString(36).slice(2);
-    const qs = new URLSearchParams({...params, secret:SECRET, callback:cb}).toString();
-    const s  = document.createElement('script');
-    const t  = setTimeout(() => {
-      delete window[cb];
-      if (s.parentNode) s.parentNode.removeChild(s);
-      reject(new Error('Sin respuesta — verifica internet'));
-    }, timeoutMs);
-    window[cb] = (data) => {
-      clearTimeout(t);
-      delete window[cb];
-      if (s.parentNode) s.parentNode.removeChild(s);
+    const cbName = 'ps_cb_' + Date.now();
+    const qs = new URLSearchParams({...params, secret: API_SECRET, callback: cbName}).toString();
+    const script = document.createElement('script');
+    const timer = setTimeout(() => {
+      delete window[cbName];
+      if (document.body.contains(script)) document.body.removeChild(script);
+      reject(new Error('Sin respuesta del servidor'));
+    }, 12000);
+    window[cbName] = (data) => {
+      clearTimeout(timer);
+      delete window[cbName];
+      if (document.body.contains(script)) document.body.removeChild(script);
       resolve(data);
     };
-    s.onerror = () => { clearTimeout(t); delete window[cb]; reject(new Error('Error de red')); };
-    s.src = `${API_URL}?${qs}`;
-    document.body.appendChild(s);
+    script.src = `${API_URL}?${qs}`;
+    script.onerror = () => {
+      clearTimeout(timer);
+      delete window[cbName];
+      reject(new Error('Error de conexión'));
+    };
+    document.body.appendChild(script);
   });
 }
 
-// ══════════════ CARGA PRINCIPAL ══════════════
-async function cargarTodo() {
-  try {
-    const data = await apiCall({action:'listar'});
-    if (!data.ok) throw new Error(data.error);
-    codigosCache = data.codigos || [];
-    renderDashboard(codigosCache);
-    renderCodigos(codigosCache);
-  } catch(e) {
-    document.getElementById('stats-container').innerHTML =
-      `<div style="color:var(--red);font-size:11px;padding:20px;letter-spacing:1px;">ERROR: ${e.message}</div>`;
+async function sendTelegram(msg) {
+  for (const chatId of TG_CHATS) {
+    try {
+      const url = `https://api.telegram.org/bot${TG_TOKEN}/sendMessage?chat_id=${chatId}&text=${encodeURIComponent(msg)}&parse_mode=HTML`;
+      await fetch(url, {method:'GET', mode:'no-cors'});
+    } catch(e) {}
   }
 }
 
-function updateTime() {
-  document.getElementById('topbar-time').textContent =
-    new Date().toLocaleTimeString('es-MX',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
-}
+// ============================================================
+// ESTADO GLOBAL
+// ============================================================
+let E = {
+  codigo:'', alumno:'', alumno_codigo:'', correo:'', tutor:'', tel:'',
+  grado:'', meta:'', plantel_nombre:'', corte:0, fecha_examen:'',
+  tipo_acceso:'',
+  compromiso:false,
+  respuestas:{},
+  tiempoInicio:null, tiempoUsado:0,
+  preguntaActual:0,
+  timerInterval:null,
+  segundosRestantes:10800,
+  tiemposPorPregunta:{},
+  tiempoUltimaPregunta:null
+};
 
-function switchTab(name, el) {
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-  el.classList.add('active');
-  document.getElementById('tab-'+name).classList.add('active');
-  if (name==='codigos') codigosCache ? renderCodigos(codigosCache) : cargarCodigos();
-  if (name==='dashboard') codigosCache ? renderDashboard(codigosCache) : cargarTodo();
-}
+// ============================================================
+// CORTES POR META
+// ============================================================
+const METAS = {
+  'ENP9':  {nombre:'ENP 9 — Pedro de Alba',    inst:'UNAM', corte:109},
+  'ENP3':  {nombre:'ENP 3 — Justo Sierra',      inst:'UNAM', corte:104},
+  'CCH':   {nombre:'CCH (cualquier plantel)',   inst:'UNAM', corte:95},
+  'VOCA9': {nombre:'Voca 9 — Juan de Dios Bátiz', inst:'IPN', corte:105},
+  'VOCA10':{nombre:'Voca 10 — Carlos Vallejo',  inst:'IPN', corte:85},
+  'OTRA':  {nombre:'Vocacional IPN',            inst:'IPN', corte:88},
+};
 
-// ══════════════ DASHBOARD ══════════════
-function renderDashboard(codigos) {
-  const ahora = new Date();
-  const activos   = codigos.filter(c=>c.estado==='activo'&&new Date(c.expira)>ahora).length;
-  const usados    = codigos.filter(c=>c.estado==='agotado').length;
-  const expirados = codigos.filter(c=>new Date(c.expira)<=ahora&&c.estado==='activo').length;
-  const dias = Math.ceil((new Date('2026-06-20')-ahora)/(1000*60*60*24));
+// ============================================================
+// PANTALLA 1: VALIDAR CÓDIGO
+// ============================================================
+async function validarCodigo() {
+  const codigo = document.getElementById('input-codigo').value.trim().toUpperCase();
+  const msg = document.getElementById('msg-codigo');
+  const btn = document.getElementById('btn-validar');
 
-  document.getElementById('stats-container').innerHTML = `
-    <div class="stats-grid">
-      <div class="stat-box"><div class="stat-num" style="color:var(--green)">${activos}</div><div class="stat-label">Activos</div></div>
-      <div class="stat-box"><div class="stat-num" style="color:var(--red)">${usados}</div><div class="stat-label">Usados</div></div>
-      <div class="stat-box"><div class="stat-num" style="color:var(--amber)">${expirados}</div><div class="stat-label">Expirados</div></div>
-      <div class="stat-box"><div class="stat-num">${codigos.length}</div><div class="stat-label">Total</div></div>
-    </div>
-    <div class="dashboard-grid">
-    <div class="countdown-box">
-      <div class="countdown-label">Días al ECOEMS 2026</div>
-      <div class="countdown-num">${dias}</div>
-      <div class="countdown-label" style="margin-top:8px;">20 · 21 · 27 · 28 JUN 2026</div>
-    </div>
-    <div class="card" style="margin-bottom:0;">
-      <div class="card-title">Actividad Reciente</div>
-      ${codigos.slice(-5).reverse().map(c=>{
-        const b=getBadge(c,ahora);
-        return `<div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
-          <div>
-            <div style="font-family:var(--display);font-size:14px;color:var(--cyan);letter-spacing:2px;">${c.codigo}</div>
-            <div style="font-size:10px;color:var(--muted);margin-top:2px;">${c.alumno}</div>
-          </div>
-          <span class="badge badge-${b.cls}">${b.txt}</span>
-        </div>`;
-      }).join('')}
-    </div>
-    </div>`;
-}
+  if (!codigo) { mostrarMsg(msg,'error','⚠️ Ingresa tu código de acceso.'); return; }
 
-// ══════════════ CÓDIGOS ══════════════
-function renderCodigos(codigos) {
-  const lista = document.getElementById('codigos-lista');
-  const ahora = new Date();
-  if (!codigos.length) { lista.innerHTML='<div class="loading">Sin códigos aún</div>'; return; }
-  lista.innerHTML = [...codigos].reverse().map(c=>{
-    const b=getBadge(c,ahora);
-    const activo=c.estado==='activo'&&new Date(c.expira)>ahora;
-    return `<div class="codigo-row">
-      <div class="codigo-top">
-        <div class="codigo-val">${c.codigo}</div>
-        <span class="badge badge-${b.cls}">${b.txt}</span>
-      </div>
-      <div class="codigo-meta">👤 ${c.alumno} · ${c.tipo}</div>
-      <div class="codigo-meta">🧑 ${c.tutor||'—'} ${c.tel_tutor?'· '+c.tel_tutor:''}</div>
-      <div class="codigo-meta">⏰ ${new Date(c.expira).toLocaleString('es-MX')}</div>
-      <div class="codigo-meta">🔢 Usos: ${c.usos}/${c.usos_max}</div>
-      <div class="codigo-actions">
-        ${activo
-          ?`<button class="btn btn-danger" onclick="toggleCodigo('${c.codigo}','inactivo')">⛔ Desactivar</button>`
-          :`<button class="btn btn-success" onclick="toggleCodigo('${c.codigo}','activo')">✅ Activar</button>`}
-        ${c.tel_tutor?`<a href="https://wa.me/52${c.tel_tutor}" target="_blank"><button class="btn btn-success">📲 WA</button></a>`:''}
-        <button class="btn btn-ghost" onclick="extenderCodigo('${c.codigo}',1)" style="font-size:9px;padding:7px 10px;border-color:var(--cyan);color:var(--cyan);">+1h</button>
-        <button class="btn btn-ghost" onclick="extenderCodigo('${c.codigo}',24)" style="font-size:9px;padding:7px 10px;border-color:var(--cyan);color:var(--cyan);">+24h</button>
-        <button class="btn btn-ghost" onclick="extenderCodigo('${c.codigo}',48)" style="font-size:9px;padding:7px 10px;border-color:var(--cyan);color:var(--cyan);">+48h</button>
-        <button class="btn btn-danger" onclick="borrarCodigo('${c.codigo}')" style="opacity:0.6;font-size:9px;">🗑 Borrar</button>      </div>
-    </div>`;
-  }).join('');
-}
+  btn.disabled = true;
+  btn.textContent = 'Validando...';
+  mostrarMsg(msg,'info','🔍 Verificando código...');
 
-async function cargarCodigos() {
-  document.getElementById('codigos-lista').innerHTML='<div class="loading"><div class="spinner"></div>CARGANDO...</div>';
   try {
-    const data = await apiCall({action:'listar'});
-    if (!data.ok) throw new Error(data.error);
-    codigosCache = data.codigos||[];
-    renderCodigos(codigosCache);
-    renderDashboard(codigosCache);
-  } catch(e) {
-    document.getElementById('codigos-lista').innerHTML=
-      `<div style="color:var(--red);font-size:11px;padding:20px">ERROR: ${e.message}</div>`;
-  }
-}
+    const res = await apiCall({action:'validar', codigo});
+    if (res.ok) {
+      E.codigo = codigo;
+      E.alumno_codigo = res.alumno || '';
+      E.tipo_acceso = res.tipo || 'simulacro';
+      mostrarMsg(msg,'ok',`✅ Código válido — Bienvenido${res.alumno ? ', ' + res.alumno : ''}!`);
 
-async function toggleCodigo(codigo,estado) {
-  try {
-    const data = await apiCall({action:'toggle',codigo,estado});
-    if (data.ok){toast(codigo+' → '+estado, estado==='activo'?'ok':'err'); codigosCache=null; cargarCodigos();}
-  } catch(e){toast('Error: '+e.message,'err');}
-}
-
-// ══════════════ CREAR CÓDIGO ══════════════
-async function extenderCodigo(codigo, horas) {
-  try {
-    const data = await apiCall({action:'extender', codigo, horas});
-    if (data.ok) {
-      const nueva = new Date(data.nueva_expira);
-      toast(`${codigo} → +${horas}h · vence ${nueva.toLocaleString('es-MX',{weekday:'short',hour:'2-digit',minute:'2-digit'})}`, 'ok');
-      codigosCache = null;
-      cargarTodo();
-    } else {
-      toast('Error: ' + data.error, 'err');
-    }
-  } catch(e) { toast('Error: ' + e.message, 'err'); }
-}
-
-
-async function borrarCodigo(codigo) {
-  // Paso 1: confirmar
-  if (!confirm(`¿Seguro que quieres borrar "${codigo}"?\n\nEsta acción no se puede deshacer.`)) return;
-  // Paso 2: segundo seguro
-  if (!confirm(`⚠️ ÚLTIMA CONFIRMACIÓN\n\nBorrar: ${codigo}\n\n¿Continuar?`)) return;
-  try {
-    const data = await apiCall({action:'borrar', codigo});
-    if (data.ok) {
-      toast('🗑 ' + codigo + ' borrado', 'ok');
-      codigosCache = null;
-      cargarTodo();
-    } else {
-      toast('Error: ' + data.error, 'err');
-    }
-  } catch(e) { toast('Error: ' + e.message, 'err'); }
-}
-
-async function crearPrueba() {
-  const num = Math.floor(1000 + Math.random() * 9000);
-  const codigo = 'TEST' + num;
-  toast('Creando prueba ' + codigo + '...');
-  try {
-    const data = await apiCall({
-      action:'crear', codigo,
-      alumno:'Usuario Prueba',
-      tutor:'Ismael Toledo',
-      tel_tutor:'5519261540',
-      tipo:'beta',
-      horas:'2',
-      usos_max:'1'
-    });
-    if (!data.ok) throw new Error(data.error);
-    // Mostrar código con opción de copiar
-    const expira = new Date(data.expira);
-    toast('✓ ' + codigo + ' · válido 2h', 'ok');
-    // Alert con el código para copiarlo fácil
-    setTimeout(() => {
-      if (confirm(`Código de prueba creado:\n\n${codigo}\n\nVálido hasta: ${expira.toLocaleString('es-MX')}\n\n¿Copiar al portapapeles?`)) {
-        navigator.clipboard.writeText(codigo);
+      // Pre-llenar nombre si viene del código
+      if (res.alumno) {
+        setTimeout(() => { document.getElementById('reg-alumno').value = res.alumno; }, 100);
       }
-    }, 500);
-    codigosCache = null;
-    cargarTodo();
-  } catch(e) { toast('Error: '+e.message,'err'); }
-}
+      if (res.tutor) {
+        setTimeout(() => { document.getElementById('reg-tutor').value = res.tutor; }, 100);
+      }
+      if (res.tel_tutor) {
+        setTimeout(() => { document.getElementById('reg-tel').value = res.tel_tutor; }, 100);
+      }
 
+      await sendTelegram(`🔑 <b>Código activado</b>\n\nCódigo: <b>${codigo}</b>\nAlumno: ${res.alumno || 'por registrar'}\nTipo: ${res.tipo || 'simulacro'}\n📅 ${new Date().toLocaleString('es-MX')}`);
 
-function sugerirCodigo(nombre) {
-  if (!nombre||nombre.trim().length<2) return;
-  const prefix = nombre.trim().toUpperCase().replace(/[^A-Z]/g,'').substring(0,3);
-  const num = Math.floor(1000+Math.random()*9000);
-  const input = document.getElementById('new-codigo');
-  if (!input.value || input.value.length===7||input.value.length===8) {
-    input.value = prefix+num;
+      setTimeout(() => showScreen('s-registro'), 1500);
+    } else {
+      mostrarMsg(msg,'error','❌ ' + (res.error || 'Código no válido'));
+      btn.disabled = false;
+      btn.textContent = 'Validar código →';
+    }
+  } catch(e) {
+    mostrarMsg(msg,'error','❌ Error de conexión. Verifica tu internet e intenta de nuevo.');
+    btn.disabled = false;
+    btn.textContent = 'Validar código →';
   }
 }
 
-function regenerarCodigo() {
-  const nombre = document.getElementById('new-alumno').value.trim();
-  const prefix = nombre ? nombre.toUpperCase().replace(/[^A-Z]/g,'').substring(0,3) : 'PS';
-  const num = Math.floor(1000+Math.random()*9000);
-  document.getElementById('new-codigo').value = prefix+num;
+// ============================================================
+// PANTALLA 2: REGISTRO
+// ============================================================
+function selMeta(meta) {
+  E.meta = meta;
+  document.querySelectorAll('.meta-opt').forEach(el => el.classList.remove('selected'));
+  event.currentTarget.classList.add('selected');
+  const m = METAS[meta];
+  if (m) { E.plantel_nombre = m.nombre; E.corte = m.corte; }
 }
 
-async function crearCodigo() {
-  const codigo = document.getElementById('new-codigo').value.trim().toUpperCase();
-  const alumno = document.getElementById('new-alumno').value.trim();
-  const tutor  = document.getElementById('new-tutor').value.trim();
-  const tel    = document.getElementById('new-tel').value.trim();
-  const tipo   = document.getElementById('new-tipo').value;
-  const horas  = document.getElementById('new-horas').value;
-  const usos   = document.getElementById('new-usos').value;
-  if (!codigo||!alumno){toast('Completa código y alumno','err');return;}
-  toast('Creando...');
+function toggleCheck() {
+  E.compromiso = !E.compromiso;
+  const icon = document.getElementById('chk-icon');
+  icon.className = 'chk' + (E.compromiso ? ' checked' : '');
+  icon.textContent = E.compromiso ? '✓' : '';
+}
+
+function mostrarModalInicio() {
+  const alumno = document.getElementById('reg-alumno').value.trim();
+  const tutor  = document.getElementById('reg-tutor').value.trim();
+  const tel    = document.getElementById('reg-tel').value.trim();
+  const grado  = document.getElementById('reg-grado').value;
+  const msg    = document.getElementById('msg-registro');
+
+  if (!alumno) { mostrarMsg(msg,'error','⚠️ Ingresa el nombre del alumno.'); return; }
+  if (!tutor)  { mostrarMsg(msg,'error','⚠️ Ingresa el nombre del tutor.'); return; }
+  if (!tel)    { mostrarMsg(msg,'error','⚠️ Ingresa el WhatsApp del tutor.'); return; }
+  if (!grado)  { mostrarMsg(msg,'error','⚠️ Selecciona el grado actual.'); return; }
+  if (!E.meta) { mostrarMsg(msg,'error','⚠️ Selecciona tu plantel objetivo.'); return; }
+  if (!E.compromiso) { mostrarMsg(msg,'error','⚠️ Acepta el compromiso para continuar.'); return; }
+
+  E.alumno  = alumno;
+  E.correo  = document.getElementById('reg-correo').value.trim();
+  E.tutor   = tutor;
+  E.tel     = tel;
+  E.grado   = grado;
+  E.fecha_examen = document.getElementById('reg-fecha').value;
+
+  document.getElementById('modal-inicio').classList.add('show');
+}
+
+function cerrarModal() {
+  document.getElementById('modal-inicio').classList.remove('show');
+}
+
+async function confirmarInicio() {
+  cerrarModal();
+  E.tiempoInicio = new Date();
+  E.tiempoUltimaPregunta = Date.now();
+
+  // ── MODO DEMO: seleccionar 25 preguntas proporcionales ──
+  const esDemo = E.tipo_acceso === 'demo';
+  if (esDemo) {
+    // Distribución demo: 3+3+2+2+2+2+2+2+2+5 = 25
+    const dist = {
+      'Habilidad Verbal': 4, 'Habilidad Matemática': 4,
+      'Matemáticas': 2, 'Español': 2, 'Física': 2,
+      'Química': 2, 'Biología': 2, 'Historia': 2,
+      'Geografía': 2, 'Formación Cívica': 3
+    };
+    const porArea = {};
+    PREGUNTAS.forEach((p,i) => {
+      if (!porArea[p.area]) porArea[p.area] = [];
+      porArea[p.area].push({...p, _idx: i});
+    });
+    E.preguntasDemo = [];
+    Object.entries(dist).forEach(([area, n]) => {
+      const pool = porArea[area] || [];
+      const sel = pool.sort(() => Math.random()-0.5).slice(0, n);
+      E.preguntasDemo.push(...sel);
+    });
+    E.preguntasDemo.sort(() => Math.random()-0.5);
+  } else {
+    E.preguntasDemo = null;
+  }
+
+  const lista = E.preguntasDemo || PREGUNTAS;
+  E.totalPreguntas = lista.length;
+
+  document.getElementById('hdr-nombre').textContent = E.alumno.split(' ')[0];
+  document.getElementById('hdr-meta').textContent = `Meta: ${E.plantel_nombre}${esDemo?' · DEMO':''}`;
+
+  showScreen('s-examen');
+  renderNav();
+  mostrarPregunta(0);
+  iniciarTimer();
+
+  const diasStr = calcularDias();
+
+  await sendTelegram(
+`📋 <b>Registro completo — ${esDemo?'DEMO 25 preg':'Examen'} iniciado</b>
+
+👤 <b>Alumno:</b> ${E.alumno}
+📧 Correo: ${E.correo || 'no proporcionado'}
+👨 <b>Tutor:</b> ${E.tutor}
+📱 <a href="https://wa.me/52${E.tel.replace(/\D/g,'')}">WhatsApp tutor → ${E.tel}</a>
+🎓 Grado: ${E.grado}
+🎫 Código: ${E.codigo} (${E.tipo_acceso})
+🏫 Meta: ${E.plantel_nombre} (corte ${E.corte} pts)
+📅 Fecha examen: ${E.fecha_examen}
+⏰ ${diasStr}
+🕐 Inicio: ${new Date().toLocaleString('es-MX')}`
+  );
+
+  try { await apiCall({action:'usar', codigo:E.codigo}); } catch(e) {}
+}
+
+function calcularDias() {
+  const fechas = {
+    '20jun': new Date('2026-06-20'),
+    '21jun': new Date('2026-06-21'),
+    '27jun': new Date('2026-06-27'),
+    '28jun': new Date('2026-06-28'),
+    'nosé':  new Date('2026-06-28'),
+  };
+  const f = fechas[E.fecha_examen] || fechas['nosé'];
+  const hoy = new Date();
+  const dias = Math.ceil((f - hoy) / (1000*60*60*24));
+  return `⏳ ${dias} días al examen`;
+}
+
+// ============================================================
+// TIMER
+// ============================================================
+function formatTime(s) {
+  const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), sec=s%60;
+  return `${h}:${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+
+function iniciarTimer() {
+  E.timerInterval = setInterval(() => {
+    E.segundosRestantes--;
+    const disp = document.getElementById('timer-display');
+    if (!disp) return;
+    disp.textContent = formatTime(E.segundosRestantes);
+    if (E.segundosRestantes <= 600 && E.segundosRestantes > 599) {
+      disp.style.color = '#ef4444';
+      const a = document.getElementById('alert-tiempo');
+      a.style.display = 'block';
+      setTimeout(() => a.style.display='none', 5000);
+    } else if (E.segundosRestantes <= 1800) {
+      disp.style.color = '#f59e0b';
+    }
+    if (E.segundosRestantes <= 0) { clearInterval(E.timerInterval); irFeedback(); }
+  }, 1000);
+}
+
+// ============================================================
+// PREGUNTAS
+// ============================================================
+const PREGUNTAS = [
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Cuál es la relación correcta? LIBRO es a LEER como PINTURA es a:',ops:['Pintar','Ver','Crear','Museo'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'Completa la analogía: MÉDICO es a HOSPITAL como MAESTRO es a:',ops:['Libro','Escuela','Alumno','Ciencia'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Qué palabra NO pertenece al grupo? Rosa, Clavel, Tulipán, Pino',ops:['Rosa','Clavel','Pino','Tulipán'],r:2},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'AGUA es a SED como COMIDA es a:',ops:['Cocinar','Hambre','Comer','Nutrición'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Cuál es el sinónimo de VELOZ?',ops:['Lento','Rápido','Fuerte','Pesado'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Cuál es el antónimo de ABUNDANCIA?',ops:['Riqueza','Exceso','Escasez','Prosperidad'],r:2},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'Completa: ZAPATO es a PIE como GUANTE es a:',ops:['Dedo','Mano','Brazo','Uña'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Qué palabra completa correctamente? "El alumno _____ sus tareas todos los días."',ops:['hacen','hizo','hace','hicieron'],r:2},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'NOCHE es a OSCURIDAD como DÍA es a:',ops:['Sol','Luz','Calor','Tiempo'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Qué palabra NO pertenece? Perro, Gato, Águila, Ratón',ops:['Perro','Águila','Gato','Ratón'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'Lee y responde: "Juan estudia 3 horas al día. María estudia el doble." ¿Cuántas horas estudia María?',ops:['3 horas','5 horas','6 horas','9 horas'],r:2},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Cuál es el significado de la palabra EFÍMERO?',ops:['Eterno','Pasajero','Intenso','Antiguo'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'CALOR es a VERANO como FRÍO es a:',ops:['Lluvia','Nieve','Invierno','Viento'],r:2},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Qué opción ordena correctamente? 1-Estudié. 2-Presenté el examen. 3-Me preparé. 4-Obtuve resultado.',ops:['1,2,3,4','3,1,2,4','1,3,2,4','2,1,3,4'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'¿Cuál es el sinónimo de PERSPICAZ?',ops:['Torpe','Agudo','Lento','Distraído'],r:1},
+  {area:'Habilidad Verbal',icono:'🗣️',texto:'AUTOR es a LIBRO como COMPOSITOR es a:',ops:['Piano','Canción','Teatro','Poema'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente número? 2, 4, 8, 16, ___',ops:['24','32','28','20'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente número? 1, 4, 9, 16, ___',ops:['20','25','23','27'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Si 5 lápices cuestan $15, ¿cuánto cuestan 8 lápices?',ops:['$20','$24','$28','$18'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente número? 3, 6, 9, 12, ___',ops:['14','15','16','18'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Un tren sale a las 8:00 y llega a las 11:30. ¿Cuánto duró el viaje?',ops:['2h 30min','3h','3h 30min','4h'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál número es mayor? 3/4, 2/3, 5/8, 7/10',ops:['2/3','5/8','3/4','7/10'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Si A > B y B > C, entonces:',ops:['C > A','A > C','C > B','B > A'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente? 1, 1, 2, 3, 5, 8, ___',ops:['10','11','13','12'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Si duplicas un número y le sumas 6 obtienes 20. ¿Cuál es el número?',ops:['5','6','7','8'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el 30% de 200?',ops:['30','50','60','45'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'En una clase hay 40 alumnos. El 25% son mujeres. ¿Cuántos hombres hay?',ops:['25','30','10','20'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente? Z, Y, X, W, ___',ops:['U','T','V','S'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Un producto cuesta $80 con 20% de descuento. ¿Cuánto pagas?',ops:['$60','$64','$70','$68'],r:1},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuál es el siguiente? 100, 50, 25, ___',ops:['10','15','12.5','20'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'Si hay 3 cajas con 4 pelotas cada una, ¿cuántas pelotas hay en total?',ops:['7','10','12','14'],r:2},
+  {area:'Habilidad Matemática',icono:'🧩',texto:'¿Cuántos minutos hay en 2.5 horas?',ops:['120','130','150','180'],r:2},
+  {area:'Matemáticas',icono:'📐',texto:'Si f(x) = 3x² - 2x + 1, ¿cuál es el valor de f(3)?',ops:['22','28','20','25'],r:1},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuál es la solución del sistema: 2x + y = 7 y x - y = 2?',ops:['x=2, y=3','x=3, y=1','x=3, y=2','x=1, y=5'],r:1},
+  {area:'Matemáticas',icono:'📐',texto:'Simplifica: (x² - 4) ÷ (x - 2)',ops:['x + 2','x - 2','x² + 2','2x'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuál es la pendiente de la recta que pasa por (1,2) y (3,8)?',ops:['2','3','4','1'],r:1},
+  {area:'Matemáticas',icono:'📐',texto:'Una circunferencia tiene radio 5 cm. ¿Cuánto mide su área?',ops:['25π cm²','10π cm²','15π cm²','20π cm²'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuánto es log₂(32)?',ops:['4','5','6','3'],r:1},
+  {area:'Matemáticas',icono:'📐',texto:'Si sen(θ) = 3/5 en el primer cuadrante, ¿cuánto es cos(θ)?',ops:['4/5','3/4','5/4','2/5'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuál es el término general de la progresión aritmética 2, 5, 8, 11...?',ops:['3n - 1','3n + 1','2n + 1','n + 3'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'Resuelve: ∫2x dx',ops:['x² + C','2x² + C','x + C','2 + C'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuántos números naturales de 3 cifras son divisibles entre 5?',ops:['180','160','150','200'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'La probabilidad de sacar un 6 al lanzar un dado es:',ops:['1/6','1/3','1/2','2/6'],r:0},
+  {area:'Matemáticas',icono:'📐',texto:'¿Cuánto mide la hipotenusa de un triángulo rectángulo con catetos 6 y 8?',ops:['10','12','14','9'],r:0},
+  {area:'Español',icono:'📖',texto:'¿Cuál de las siguientes oraciones tiene un complemento directo?',ops:['María corre rápido','Pedro compró un libro','Ana es inteligente','El cielo está nublado'],r:1},
+  {area:'Español',icono:'📖',texto:'Identifica la figura retórica: "Sus ojos son dos luceros"',ops:['Hipérbole','Metonimia','Metáfora','Símil'],r:2},
+  {area:'Español',icono:'📖',texto:'¿Qué tipo de narrador conoce los pensamientos de todos los personajes?',ops:['Primera persona','Testigo','Omnisciente','Protagonista'],r:2},
+  {area:'Español',icono:'📖',texto:'"El perro ladra" es un ejemplo de oración:',ops:['Compuesta','Simple','Yuxtapuesta','Coordinada'],r:1},
+  {area:'Español',icono:'📖',texto:'¿Qué función del lenguaje predomina en un poema lírico?',ops:['Referencial','Poética','Apelativa','Fática'],r:1},
+  {area:'Español',icono:'📖',texto:'La palabra "bicicleta" es:',ops:['Aguda','Esdrújula','Llana','Sobresdrújula'],r:2},
+  {area:'Español',icono:'📖',texto:'¿Cuál es el antónimo de "parsimonia"?',ops:['Lentitud','Precipitación','Calma','Prudencia'],r:1},
+  {area:'Español',icono:'📖',texto:'Un texto argumentativo tiene como propósito principal:',ops:['Narrar eventos','Describir lugares','Convencer o persuadir','Informar objetivamente'],r:2},
+  {area:'Español',icono:'📖',texto:'La coma se usa correctamente en:',ops:['"Vine, vi, vencí"','"El perro, ladra fuerte"','"María, es bonita"','"Hoy, llueve"'],r:0},
+  {area:'Español',icono:'📖',texto:'¿Qué género literario incluye el cuento y la novela?',ops:['Lírico','Dramático','Narrativo','Épico'],r:2},
+  {area:'Español',icono:'📖',texto:'La palabra "deshacer" tiene el prefijo:',ops:['des-','de-','d-','desh-'],r:0},
+  {area:'Español',icono:'📖',texto:'En la oración "El maestro explicó la lección", el sujeto es:',ops:['explicó','la lección','El maestro','la'],r:2},
+  {area:'Física',icono:'⚡',texto:'La unidad del Sistema Internacional para medir la fuerza es:',ops:['Joule','Newton','Pascal','Watt'],r:1},
+  {area:'Física',icono:'⚡',texto:'Un objeto cae libremente desde el reposo. A los 2 segundos su velocidad es: (g=10m/s²)',ops:['10 m/s','20 m/s','40 m/s','5 m/s'],r:1},
+  {area:'Física',icono:'⚡',texto:'La primera ley de Newton establece que:',ops:['F=ma','Un cuerpo en reposo permanece así si no actúa fuerza neta','Por cada acción hay reacción','El trabajo es fuerza por distancia'],r:1},
+  {area:'Física',icono:'⚡',texto:'¿Qué tipo de onda es el sonido?',ops:['Electromagnética transversal','Mecánica longitudinal','Mecánica transversal','Electromagnética longitudinal'],r:1},
+  {area:'Física',icono:'⚡',texto:'La velocidad de la luz en el vacío es aproximadamente:',ops:['300,000 km/s','30,000 km/s','3,000 km/s','3,000,000 km/s'],r:0},
+  {area:'Física',icono:'⚡',texto:'La ley de Ohm relaciona:',ops:['Presión, volumen y temperatura','Voltaje, corriente y resistencia','Masa, aceleración y fuerza','Energía, masa y velocidad'],r:1},
+  {area:'Física',icono:'⚡',texto:'El trabajo realizado por una fuerza de 10N que desplaza 5m es:',ops:['2 J','15 J','50 J','0.5 J'],r:2},
+  {area:'Física',icono:'⚡',texto:'¿Qué fenómeno explica por qué el cielo es azul?',ops:['Refracción','Dispersión','Difracción','Dispersión de Rayleigh'],r:3},
+  {area:'Física',icono:'⚡',texto:'La energía potencial gravitacional depende de:',ops:['Velocidad y masa','Masa, gravedad y altura','Solo de la altura','Fuerza y distancia'],r:1},
+  {area:'Física',icono:'⚡',texto:'¿Qué partícula subatómica tiene carga negativa?',ops:['Protón','Neutrón','Electrón','Positrón'],r:2},
+  {area:'Física',icono:'⚡',texto:'La frecuencia y el período de una onda son:',ops:['Directamente proporcionales','Inversamente proporcionales','Iguales','Independientes'],r:1},
+  {area:'Física',icono:'⚡',texto:'Un cuerpo con velocidad constante tiene fuerza neta:',ops:['Grande','Igual a cero','Variable','Positiva'],r:1},
+  {area:'Química',icono:'🧪',texto:'¿Cuál es la fórmula del peróxido de hidrógeno?',ops:['H₂O','HO','H₂O₂','H₃O'],r:2},
+  {area:'Química',icono:'🧪',texto:'El número de Avogadro (6.022×10²³) representa:',ops:['Electrones en un átomo','Partículas en un mol','Masa de un mol','Velocidad de reacción'],r:1},
+  {area:'Química',icono:'🧪',texto:'En la tabla periódica, los halógenos se ubican en el grupo:',ops:['IA','IVA','VIIA','0 (gases nobles)'],r:2},
+  {area:'Química',icono:'🧪',texto:'¿Cuál es la ecuación balanceada de H₂ + O₂ → H₂O?',ops:['H₂+O₂→H₂O','2H₂+O₂→2H₂O','H₂+2O₂→2H₂O','2H₂+2O₂→2H₂O'],r:1},
+  {area:'Química',icono:'🧪',texto:'¿Qué tipo de enlace se forma entre metales y no metales?',ops:['Covalente polar','Metálico','Iónico','Covalente apolar'],r:2},
+  {area:'Química',icono:'🧪',texto:'El pH de una solución ácida es:',ops:['Mayor a 7','Igual a 7','Menor a 7','Igual a 14'],r:2},
+  {area:'Química',icono:'🧪',texto:'¿Cuál es el símbolo del Oro?',ops:['Or','Go','Au','Ag'],r:2},
+  {area:'Química',icono:'🧪',texto:'En una reacción redox, el agente oxidante:',ops:['Se oxida','Se reduce','Pierde electrones','No cambia'],r:1},
+  {area:'Química',icono:'🧪',texto:'La destilación separa mezclas basándose en:',ops:['Solubilidad','Punto de ebullición','Tamaño de partículas','Densidad'],r:1},
+  {area:'Química',icono:'🧪',texto:'¿Qué tipo de reacción produce calor?',ops:['Endotérmica','Exotérmica','Neutra','Catalítica'],r:1},
+  {area:'Química',icono:'🧪',texto:'El isótopo del carbono usado en datación radiactiva es:',ops:['C-12','C-13','C-14','C-11'],r:2},
+  {area:'Química',icono:'🧪',texto:'¿Cuántos electrones caben en el tercer nivel de energía?',ops:['2','8','18','32'],r:2},
+  {area:'Biología',icono:'🧬',texto:'¿En qué orgánulo celular se lleva a cabo la fotosíntesis?',ops:['Mitocondria','Ribosoma','Cloroplasto','Núcleo'],r:2},
+  {area:'Biología',icono:'🧬',texto:'El ADN tiene como bases nitrogenadas:',ops:['A, T, G, U','A, T, G, C','A, U, G, C','A, T, C, U'],r:1},
+  {area:'Biología',icono:'🧬',texto:'¿Cuál de los siguientes es un organismo procariota?',ops:['Hongo','Bacteria','Planta','Animal'],r:1},
+  {area:'Biología',icono:'🧬',texto:'La meiosis produce células:',ops:['Con igual número de cromosomas','Haploides (mitad de cromosomas)','Con doble de cromosomas','Con tres juegos de cromosomas'],r:1},
+  {area:'Biología',icono:'🧬',texto:'¿Qué tipo de biomoléculas son la glucosa y el almidón?',ops:['Proteínas','Lípidos','Carbohidratos','Ácidos nucleicos'],r:2},
+  {area:'Biología',icono:'🧬',texto:'La selección natural fue propuesta por:',ops:['Gregor Mendel','Louis Pasteur','Charles Darwin','James Watson'],r:2},
+  {area:'Biología',icono:'🧬',texto:'El corazón humano tiene:',ops:['2 cámaras','3 cámaras','4 cámaras','6 cámaras'],r:2},
+  {area:'Biología',icono:'🧬',texto:'La respiración celular ocurre principalmente en:',ops:['El núcleo','Los ribosomas','La mitocondria','El retículo endoplásmico'],r:2},
+  {area:'Biología',icono:'🧬',texto:'¿Qué hormona regula el nivel de glucosa en sangre?',ops:['Adrenalina','Insulina','Tiroxina','Cortisol'],r:1},
+  {area:'Biología',icono:'🧬',texto:'En la cadena trófica, los productores son:',ops:['Animales carnívoros','Descomponedores','Plantas y algas','Herbívoros'],r:2},
+  {area:'Biología',icono:'🧬',texto:'La pared celular de plantas está compuesta principalmente de:',ops:['Proteínas','Lípidos','Celulosa','Quitina'],r:2},
+  {area:'Biología',icono:'🧬',texto:'¿Cuántos pares de cromosomas tiene el ser humano?',ops:['23','46','44','22'],r:0},
+  {area:'Historia',icono:'🏛️',texto:'¿En qué año inició la Revolución Mexicana?',ops:['1900','1910','1920','1905'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'La Constitución Mexicana vigente fue promulgada en:',ops:['1857','1917','1910','1824'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'¿Quién fue el primer presidente de México?',ops:['Benito Juárez','Agustín de Iturbide','Guadalupe Victoria','Santa Anna'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'La Segunda Guerra Mundial terminó en:',ops:['1943','1944','1945','1946'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'¿Qué civilización construyó el Templo Mayor en Tenochtitlan?',ops:['Maya','Olmeca','Azteca (Mexica)','Tolteca'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'La Revolución Francesa inició en:',ops:['1776','1789','1799','1804'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'El Tratado de Guadalupe Hidalgo (1848) implicó que México:',ops:['Ganó Texas','Cedió más de la mitad de su territorio a EUA','Se independizó de España','Firmó paz con Francia'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'¿Qué movimiento intelectual dominó Europa en el siglo XVIII?',ops:['Romanticismo','Renacimiento','Ilustración','Barroco'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'La ONU fue fundada después de:',ops:['La Primera Guerra Mundial','La Segunda Guerra Mundial','La Guerra Fría','La Guerra de Corea'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'¿Cuál fue la primera civilización de Mesoamérica?',ops:['Azteca','Maya','Olmeca','Teotihuacana'],r:2},
+  {area:'Historia',icono:'🏛️',texto:'El Porfiriato se caracterizó por:',ops:['Gran democracia','Largo gobierno de Díaz con modernización y represión','Revolución social','Independencia'],r:1},
+  {area:'Historia',icono:'🏛️',texto:'La Guerra Fría fue un conflicto entre:',ops:['México y EUA','URSS y China','EUA y la URSS','Europa y Asia'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es el río más largo del mundo?',ops:['Amazonas','Nilo','Misisipi','Yangtsé'],r:1},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es el océano más grande del mundo?',ops:['Atlántico','Índico','Pacífico','Ártico'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'¿Qué tipo de clima predomina en la Amazonía?',ops:['Desértico','Tropical húmedo','Templado','Polar'],r:1},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es la montaña más alta del mundo?',ops:['K2','Mont Blanc','Everest','Aconcagua'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'¿Qué país tiene mayor extensión territorial en el mundo?',ops:['China','Canadá','Rusia','Estados Unidos'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es la capital de Argentina?',ops:['São Paulo','Lima','Santiago','Buenos Aires'],r:3},
+  {area:'Geografía',icono:'🌍',texto:'¿Qué fenómeno provoca los terremotos?',ops:['Erupciones volcánicas','Movimiento de placas tectónicas','Corrientes oceánicas','Tormentas'],r:1},
+  {area:'Geografía',icono:'🌍',texto:'¿En qué zona climática se ubica la mayor parte de México?',ops:['Polar','Templada','Tropical y seca','Ecuatorial'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es el desierto más grande del mundo?',ops:['Sahara','Gobi','Atacama','Arábigo'],r:0},
+  {area:'Geografía',icono:'🌍',texto:'¿Qué corriente oceánica influye en el clima del norte de Europa?',ops:['Corriente de California','Corriente del Golfo','Corriente de Humboldt','Corriente de Labrador'],r:1},
+  {area:'Geografía',icono:'🌍',texto:'¿Cuál es el volcán más alto de México?',ops:['Popocatépetl','Iztaccíhuatl','Pico de Orizaba','Nevado de Toluca'],r:2},
+  {area:'Geografía',icono:'🌍',texto:'La Sierra Madre Occidental recorre México de:',ops:['Norte a Sur por el este','Norte a Sur por el oeste','Este a Oeste','Forma circular'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Cuál es el máximo ordenamiento jurídico de México?',ops:['Código Civil','Ley Federal del Trabajo','Constitución Política','Código Penal'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Cuántos poderes tiene el Estado mexicano?',ops:['2','3','4','5'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿A qué edad se adquiere la ciudadanía en México?',ops:['16 años','17 años','18 años','21 años'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Qué artículo constitucional garantiza el derecho a la educación?',ops:['Artículo 1°','Artículo 3°','Artículo 4°','Artículo 27'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Quién encabeza el Poder Ejecutivo en México?',ops:['El Senado','La SCJN','El Presidente de la República','La Cámara de Diputados'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Cuántos senadores integran el Senado de la República?',ops:['300','200','128','500'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'Los Derechos Humanos se caracterizan por ser:',ops:['Temporales y transferibles','Universales e inalienables','Solo para ciudadanos mexicanos','Otorgados por el gobierno'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Qué es la democracia?',ops:['Gobierno de los militares','Gobierno de una sola persona','Sistema donde el pueblo elige a sus gobernantes','Gobierno de los más ricos'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Cuál es la función principal del Poder Judicial?',ops:['Crear leyes','Aplicar e interpretar las leyes','Ejecutar el presupuesto','Dirigir las fuerzas armadas'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Qué institución protege los derechos humanos en México?',ops:['El Senado','La Secretaría de Gobernación','La CNDH','El Tribunal Electoral'],r:2},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Qué es el sufragio?',ops:['Un impuesto','El derecho a votar','Una ley federal','Un tipo de protesta'],r:1},
+  {area:'Formación Cívica',icono:'⚖️',texto:'¿Cuál es el periodo presidencial en México?',ops:['4 años','5 años','6 años','7 años'],r:2}
+];
+
+function renderNav() {
+  const wrap = document.getElementById('nav-preguntas');
+  wrap.innerHTML = '';
+  const lista = E.preguntasDemo || PREGUNTAS;
+  lista.forEach((p,i) => {
+    const btn = document.createElement('div');
+    btn.className = 'nav-q' + (i===0?' actual':'') + (E.respuestas[i]!==undefined?' respondida':'');
+    btn.textContent = i+1;
+    btn.onclick = () => mostrarPregunta(i);
+    btn.id = `nq-${i}`;
+    wrap.appendChild(btn);
+  });
+}
+
+function mostrarPregunta(idx) {
+  const lista = E.preguntasDemo || PREGUNTAS;
+  if (idx < 0 || idx >= lista.length) return;
+
+  // Registrar tiempo en pregunta anterior
+  if (E.tiempoUltimaPregunta !== null) {
+    const seg = Math.round((Date.now() - E.tiempoUltimaPregunta) / 1000);
+    E.tiemposPorPregunta[E.preguntaActual] = (E.tiemposPorPregunta[E.preguntaActual] || 0) + seg;
+  }
+  E.tiempoUltimaPregunta = Date.now();
+
+  document.querySelectorAll('.nav-q').forEach((el,i) => el.classList.toggle('actual', i===idx));
+  E.preguntaActual = idx;
+  const p = lista[idx];
+
+  document.getElementById('area-badge').textContent = `${p.icono} ${p.area}`;
+  document.getElementById('pregunta-num').textContent = `Pregunta ${idx+1} de ${lista.length}`;
+  document.getElementById('pregunta-txt').textContent = p.texto;
+
+  const resp = Object.keys(E.respuestas).length;
+  document.getElementById('prog-texto').textContent = `Pregunta ${idx+1} de ${lista.length}`;
+  document.getElementById('prog-resp').textContent = `${resp} respondidas`;
+  document.getElementById('prog-fill').style.width = `${(resp/lista.length)*100}%`;
+
+  const letras = ['A','B','C','D'];
+  const wrapOps = document.getElementById('opciones-wrap');
+  wrapOps.innerHTML = '';
+  p.ops.forEach((op,oi) => {
+    const div = document.createElement('div');
+    div.className = 'opcion' + (E.respuestas[idx]===oi?' selected':'');
+    div.innerHTML = `<div class="opcion-letra">${letras[oi]}</div><div>${op}</div>`;
+    div.onclick = () => selResp(idx, oi);
+    wrapOps.appendChild(div);
+  });
+
+  const btnSig = document.getElementById('btn-siguiente');
+  if (idx === lista.length-1) {
+    btnSig.textContent = 'Finalizar ✓';
+    btnSig.onclick = () => confirmarFinalizar();
+  } else {
+    btnSig.textContent = 'Siguiente →';
+    btnSig.onclick = () => navPregunta(1);
+  }
+}
+
+function selResp(idx, oi) {
+  const lista = E.preguntasDemo || PREGUNTAS;
+  E.respuestas[idx] = oi;
+  const nq = document.getElementById(`nq-${idx}`);
+  if (nq) nq.classList.add('respondida');
+  document.querySelectorAll('.opcion').forEach((el,i) => el.classList.toggle('selected', i===oi));
+  const resp = Object.keys(E.respuestas).length;
+  document.getElementById('prog-resp').textContent = `${resp} respondidas`;
+  document.getElementById('prog-fill').style.width = `${(resp/lista.length)*100}%`;
+}
+
+function navPregunta(dir) {
+  mostrarPregunta(E.preguntaActual + dir);
+}
+
+function confirmarFinalizar() {
+  const lista = E.preguntasDemo || PREGUNTAS;
+  const pend = lista.length - Object.keys(E.respuestas).length;
+  if (pend > 0) {
+    if (!confirm(`Tienes ${pend} preguntas sin responder.\n¿Deseas finalizar de todas formas?\n\nNo hay penalización por respuesta incorrecta.`)) return;
+  }
+  clearInterval(E.timerInterval);
+  E.tiempoUsado = 10800 - E.segundosRestantes;
+  irFeedback();
+}
+
+function irFeedback() { showScreen('s-feedback'); }
+
+// ============================================================
+// CALCULAR Y ENVIAR
+// ============================================================
+function calcularResultados() {
+  const lista = E.preguntasDemo || PREGUNTAS;
+  const areas = {};
+  lista.forEach((p,i) => {
+    if (!areas[p.area]) areas[p.area] = {correctas:0, total:0, icono:p.icono, segs:0};
+    areas[p.area].total++;
+    areas[p.area].segs += (E.tiemposPorPregunta[i] || 0);
+    if (E.respuestas[i] === p.r) areas[p.area].correctas++;
+  });
+  let total = 0;
+  Object.values(areas).forEach(a => total += a.correctas);
+  return {areas, total};
+}
+
+function getNivel(total, areas) {
+  const areasFalladas = Object.entries(areas).filter(([n,a]) => a.correctas/a.total < 0.6);
+  const nFalla = areasFalladas.length;
+  if (nFalla <= 1) return {nivel:1, precio:299, precio_antes:599};
+  if (nFalla <= 2) return {nivel:2, precio:799, precio_antes:1599};
+  if (nFalla <= 4) return {nivel:3, precio:1299, precio_antes:2599};
+  return {nivel:4, precio:1999, precio_antes:3999};
+}
+
+async function procesarResultados() {
+  const fb1 = document.getElementById('fb-dificil').value.trim();
+  const fb2 = document.getElementById('fb-nivel').value.trim();
+  const fb3 = document.getElementById('fb-mejora').value.trim();
+  const msg = document.getElementById('msg-feedback');
+
+  if (fb1.length < 10 || fb2.length < 10 || fb3.length < 10) {
+    mostrarMsg(msg,'error','⚠️ Completa todos los campos (mínimo 10 caracteres cada uno).');
+    return;
+  }
+
+  document.getElementById('sending-overlay').classList.add('show');
+  const {areas, total} = calcularResultados();
+  const tiempoStr = formatTime(E.tiempoUsado);
+  const diasStr = calcularDias();
+  const {nivel, precio, precio_antes} = getNivel(total, areas);
+
+  // Armar reporte de áreas
+  let areasStr = '';
+  let velocidadStr = '';
+  Object.entries(areas).forEach(([nombre, data]) => {
+    const pct = Math.round((data.correctas/data.total)*100);
+    const emoji = pct >= 80 ? '✅' : pct >= 60 ? '⚠️' : '❌';
+    const segProm = Math.round(data.segs / data.total);
+    const vel = segProm < 60 ? '⚡rápido' : segProm < 120 ? '🕐normal' : '🐢lento';
+    areasStr += `${emoji} ${nombre}: ${data.correctas}/${data.total} (${pct}%)\n`;
+    velocidadStr += `  • ${nombre}: ~${segProm}s → ${vel}\n`;
+  });
+
+  const diff = total - E.corte;
+  const statusMeta = diff >= 5 ? '✅ MUY PROBABLE' : diff >= 0 ? '✅ EN RANGO' : diff >= -8 ? '⚠️ CERCA' : '❌ NECESITA REFUERZO';
+  const ptsFaltantes = Math.max(0, E.corte - total);
+  const ptsExtra = Math.max(0, total - E.corte);
+
+  const areasFuertes = Object.entries(areas).filter(([n,a]) => a.correctas/a.total >= 0.7).map(([n]) => n);
+  const areasDebiles = Object.entries(areas).filter(([n,a]) => a.correctas/a.total < 0.6).map(([n]) => n);
+
+  const urgencia = ptsFaltantes === 0
+    ? `🏆 YA SUPERA EL CORTE por ${ptsExtra} pts`
+    : ptsFaltantes <= 5
+    ? `🔥 SOLO LE FALTAN ${ptsFaltantes} PTS — cierre fácil`
+    : ptsFaltantes <= 15
+    ? `⚠️ Le faltan ${ptsFaltantes} pts — recuperable`
+    : `❌ Le faltan ${ptsFaltantes} pts — necesita plan serio`;
+
+  const gradoTexto = {'3sec':'3° secundaria','egresado':'Ya egresó','repite':'Ya presentó antes'}[E.grado] || E.grado;
+
+  const pitch = nivel === 1
+    ? `"Está a ${ptsFaltantes} pts. Con la guía de ${areasDebiles[0]||'refuerzo'} llega en 7 días. $299."`
+    : nivel === 2
+    ? `"Falló ${areasDebiles.length} materias (${areasDebiles.join(', ')}). Plan 10 días = $799."`
+    : nivel === 3
+    ? `"${areasDebiles.length} áreas débiles. Quedan ${diasStr.replace('⏳','')} — plan intensivo $1,299."`
+    : `"Necesita mentoría. Llámale HOY. Ofrece diagnóstico $999 o mentoría $1,999."`;
+
+  const telLimpio = E.tel.replace(/\D/g,'');
+  const waLink = `https://wa.me/52${telLimpio}`;
+
+  const mensaje =
+`━━━━━━━━━━━━━━━━━━━━━
+📊 <b>PREPASEGURA — RESULTADO</b>
+━━━━━━━━━━━━━━━━━━━━━
+
+👤 <b>ALUMNO</b>
+  ${E.alumno} | ${gradoTexto}
+  📧 ${E.correo || 'sin correo'}
+
+👨 <b>TUTOR</b>
+  ${E.tutor}
+  📲 <a href="${waLink}">WhatsApp → ${E.tel}</a>
+
+🎫 Código: ${E.codigo}
+🏫 Meta: <b>${E.plantel_nombre}</b>
+📅 Examen: ${E.fecha_examen} | ${diasStr}
+
+━━━━━━━━━━━━━━━━━━━━━
+📈 <b>PUNTAJE: ${total}/128</b>
+🎯 Corte ${E.corte} pts → ${statusMeta}
+${urgencia}
+━━━━━━━━━━━━━━━━━━━━━
+
+📚 <b>POR ÁREA</b>
+${areasStr}
+💪 Fuerte: ${areasFuertes.join(', ')||'—'}
+❌ Débil: ${areasDebiles.join(', ')||'ninguna'}
+
+⏱ <b>VELOCIDAD</b>
+${velocidadStr}Tiempo total: ${tiempoStr}
+
+━━━━━━━━━━━━━━━━━━━━━
+💰 <b>VENTA → Nivel ${nivel} · $${precio}</b>
+  ${pitch}
+━━━━━━━━━━━━━━━━━━━━━
+
+💬 <b>FEEDBACK</b>
+  😓 ${fb1}
+  📊 ${fb2}
+  🔧 ${fb3}
+
+🕐 ${new Date().toLocaleString('es-MX')}
+━━━━━━━━━━━━━━━━━━━━━`;
+
+  await sendTelegram(mensaje);
+
+  // Guardar resultado en Google Sheets
   try {
-    const data = await apiCall({action:'crear',codigo,alumno,tutor,tel_tutor:tel,tipo,horas,usos_max:usos});
-    if (!data.ok) throw new Error(data.error);
-    const expira = new Date(data.expira);
-    document.getElementById('res-codigo').textContent = data.codigo;
-    document.getElementById('res-alumno').textContent = alumno+' · '+tipo;
-    document.getElementById('res-expiry').textContent = 'Expira: '+expira.toLocaleString('es-MX');
-    document.getElementById('result-box').style.display = 'block';
-    lastCreated = {codigo:data.codigo,alumno,tutor,tel,tipo,expira};
-    codigosCache = null;
-    toast('✓ '+data.codigo+' creado','ok');
-    ['new-codigo','new-alumno','new-tutor','new-tel'].forEach(id=>document.getElementById(id).value='');
-  } catch(e){toast('Error: '+e.message,'err');}
+    const areasPuntos = {};
+    Object.entries(areas).forEach(([nombre, data]) => {
+      areasPuntos[nombre] = data.correctas;
+    });
+
+    const fechas = {
+      '20jun':new Date('2026-06-20'),'21jun':new Date('2026-06-21'),
+      '27jun':new Date('2026-06-27'),'28jun':new Date('2026-06-28'),
+      'nosé': new Date('2026-06-28')
+    };
+    const diasExamen = Math.ceil((fechas[E.fecha_examen||'nosé'] - new Date()) / (1000*60*60*24));
+
+    await apiCall({
+      action:       'guardar_resultado',
+      codigo:       E.codigo,
+      alumno:       E.alumno,
+      tutor:        E.tutor,
+      tel_tutor:    E.tel.replace(/\D/g,''),
+      meta:         E.plantel_nombre,
+      corte:        E.corte,
+      total:        total,
+      areas:        JSON.stringify(areasPuntos),
+      tiempo_seg:   E.tiempoUsado,
+      dias_examen:  diasExamen,
+      grado:        E.grado,
+      fecha_examen: E.fecha_examen,
+      nivel_venta:  nivel
+    });
+  } catch(e) { console.log('Resultado no guardado en Sheets:', e.message); }
+  document.getElementById('sending-overlay').classList.remove('show');
+  mostrarResultados(areas, total, tiempoStr, statusMeta, nivel, precio, precio_antes);
 }
 
-// ══════════════ WHATSAPP ══════════════
-function getMensaje() {
-  if (!lastCreated) return '';
-  const expira = new Date(lastCreated.expira);
-  return `Hola! 👋\n\nTe comparto algo importante para *${lastCreated.alumno}* antes del examen ECOEMS 2026.\n\n*El examen consta de 128 preguntas en 3 horas.*\nNuestro simulacro diagnóstico te da la fotografía exacta:\n\n✅ En qué materias está bien\n❌ Dónde está fallando\n⏱ Cuánto tiempo tarda por pregunta\n🎯 Qué tan lejos está del corte de su plantel\n\n*Entra aquí con tu código:*\nhttps://marbus.github.io/prepasegura\n\n🔑 *Código:* ${lastCreated.codigo}\n⏰ Válido hasta: ${expira.toLocaleString('es-MX')}\n⚠️ 1 solo uso — una vez que inicie no hay pausa\n\n¡Mucho éxito! 🚀\n#PrepaSegura2026`;
+// ============================================================
+// PANTALLA DE RESULTADOS + P4 OFERTA
+// ============================================================
+function mostrarResultados(areas, total, tiempoStr, statusMeta, nivel, precio, precio_antes) {
+  showScreen('s-resultados');
+
+  document.getElementById('res-score').textContent = total;
+  document.getElementById('res-sub').textContent = `${E.alumno} · ${E.plantel_nombre}`;
+  document.getElementById('res-tiempo').textContent = `⏱ Tiempo: ${tiempoStr} de 3:00:00`;
+  document.getElementById('res-dias').textContent = calcularDias();
+
+  const colores = {
+    'Matemáticas':'#60a5fa','Español':'#a78bfa','Física':'#34d399',
+    'Química':'#f97316','Biología':'#22c55e','Historia':'#fbbf24',
+    'Civismo y Geografía':'#e879f9'
+  };
+
+  // Áreas
+  let areasHtml = '';
+  Object.entries(areas).forEach(([nombre, data]) => {
+    const pct = Math.round((data.correctas/data.total)*100);
+    const color = colores[nombre] || '#60a5fa';
+    areasHtml += `<div class="area-row">
+      <div class="area-nombre">${data.icono} ${nombre.split(' ')[0]}</div>
+      <div class="area-bar-wrap"><div class="area-bar-fill" style="width:${pct}%;background:${color}"></div></div>
+      <div class="area-pts" style="color:${color}">${data.correctas}/${data.total}</div>
+    </div>`;
+  });
+  document.getElementById('res-areas').innerHTML = areasHtml;
+
+  // Planteles relevantes según meta
+  const diff = total - E.corte;
+  const cl = diff >= 0 ? 'ok' : diff >= -8 ? 'cerca' : 'no';
+  let plantelesHtml = `<div class="plantel-res ${cl}">
+    <div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;">${E.plantel_nombre}</div>
+      <div style="font-size:11px;color:var(--gris)">Corte estimado 2026: ${E.corte} pts</div>
+    </div>
+    <div style="font-weight:700;font-size:13px">${statusMeta}</div>
+  </div>`;
+  document.getElementById('res-planteles').innerHTML = plantelesHtml;
+
+  // Tips áreas débiles
+  const tips = {
+    'Matemáticas':'Enfócate en álgebra y geometría analítica — son los temas con más peso.',
+    'Español':'Practica comprensión lectora con textos académicos. Lee un artículo al día.',
+    'Física':'Domina las fórmulas y sus unidades. Resuelve 5 problemas diarios.',
+    'Química':'Balanceo de ecuaciones y tabla periódica son clave. Practica todos los días.',
+    'Biología':'Repasa genética y procesos celulares — los más frecuentes en el examen.',
+    'Historia':'Crea líneas de tiempo. Conecta eventos de México con el mundo.',
+    'Civismo y Geografía':'Estudia los artículos constitucionales clave y geografía de México.'
+  };
+  const debiles = Object.entries(areas).filter(([n,a]) => a.correctas/a.total < 0.6).sort((a,b) => a[1].correctas/a[1].total - b[1].correctas/b[1].total);
+  let tipsHtml = debiles.length === 0
+    ? '<div style="color:var(--verde);font-size:13px;">¡Excelente dominio en todas las áreas! 🎉</div>'
+    : debiles.slice(0,3).map(([nombre, data]) => {
+        const pct = Math.round((data.correctas/data.total)*100);
+        return `<div style="padding:12px;background:var(--bg3);border-radius:8px;margin-bottom:8px;border-left:3px solid var(--rojo);">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;">${data.icono} ${nombre} — ${pct}%</div>
+          <div style="font-size:12px;color:var(--gris);margin-top:4px;">${tips[nombre]||''}</div>
+        </div>`;
+      }).join('');
+  document.getElementById('res-tips').innerHTML = tipsHtml;
+
+  // P4 — OFERTA con psicología de venta
+  const ofertaData = {
+    1: {
+      titulo: 'Ya casi llegas. Solo necesitas enfocarte.',
+      desc: `Tu diagnóstico muestra que con refuerzo en ${debiles.length === 1 ? debiles[0][0] : 'las materias clave'} puedes recuperar los puntos que necesitas para tu meta. No es suerte — es estrategia.`,
+      incluye: ['📘 Guía enfocada en tus preguntas exactas falladas','📅 Plan de estudio de 7 días','✅ Técnicas de resolución rápida por materia']
+    },
+    2: {
+      titulo: 'Con el plan correcto, tu lugar está al alcance.',
+      desc: 'Tienes el nivel base. Lo que falta es organización y enfoque. Nuestro plan de 10 días trabaja exactamente las materias donde perdiste puntos — nada de estudiar lo que ya sabes.',
+      incluye: ['📘 Guías por cada materia que fallaste','📅 Plan de estudio de 10 días personalizado','🎯 Simulacro de seguimiento incluido','📞 Sesión de orientación con tu asesor']
+    },
+    3: {
+      titulo: 'Este es el momento de actuar. Hay tiempo.',
+      desc: `Faltan ${calcularDias().replace('⏳','')} para tu examen. Con un plan intensivo bien ejecutado, los resultados son reales. Trabajamos las materias que más impacto tienen en tu puntaje final.`,
+      incluye: ['📘 Guías de las 2 materias más críticas','📋 Resumen ejecutivo por área','📞 Sesión 1-a-1 con tu asesor','📅 Plan intensivo de 14 días','🔔 Seguimiento directo por WhatsApp']
+    },
+    4: {
+      titulo: 'Tu caso necesita atención personalizada.',
+      desc: 'Los resultados muestran que necesitas más que una guía — necesitas un plan diseñado específicamente para ti. Hablemos directamente para entender tu situación y diseñar la estrategia correcta.',
+      incluye: ['🔍 Diagnóstico profundo personalizado (1h con tu asesor)','📋 Plan de acción detallado','📞 Acompañamiento durante todo el proceso']
+    }
+  };
+
+  const o = ofertaData[nivel];
+  const telAsesor = '5533763792'; // puedes cambiar esto
+  const msgWA = encodeURIComponent(`Hola, acabo de terminar el simulador PrepaSegura.\nAlumno: ${E.alumno}\nPuntaje: ${total}/128\nMeta: ${E.plantel_nombre}\nMe interesa el paquete Nivel ${nivel}.`);
+  const waUrl = `https://wa.me/52${telAsesor}?text=${msgWA}`;
+
+  document.getElementById('bloque-oferta').style.display = 'none';
+
+  document.getElementById('res-status').textContent = `Diagnóstico enviado · ${new Date().toLocaleString('es-MX')}`;
 }
 
-function copiarMensaje() {
-  navigator.clipboard.writeText(getMensaje()).then(()=>toast('Copiado ✓','ok'));
+// ============================================================
+// UTILIDADES
+// ============================================================
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
 }
-function compartirWhatsApp() {
-  const tel = lastCreated?.tel ? '52'+lastCreated.tel : '';
-  const url = tel
-    ? `https://wa.me/${tel}?text=${encodeURIComponent(getMensaje())}`
-    : `https://wa.me/?text=${encodeURIComponent(getMensaje())}`;
-  window.open(url,'_blank');
-}
-
-// ══════════════ UTILS ══════════════
-function getBadge(c,ahora) {
-  if (c.estado==='agotado')  return {cls:'agotado', txt:'Usado'};
-  if (c.estado==='inactivo') return {cls:'inactivo',txt:'Inactivo'};
-  if (new Date(c.expira)<=ahora) return {cls:'expirado',txt:'Expirado'};
-  return {cls:'activo',txt:'Activo'};
-}
-
-function toast(msg,type='') {
-  const el=document.getElementById('toast');
-  el.textContent=msg;
-  el.className='toast show'+(type?' '+type:'');
-  setTimeout(()=>{el.className='toast';},3000);
+function mostrarMsg(el, tipo, texto) {
+  el.className = `msg ${tipo} show`;
+  el.textContent = texto;
+  setTimeout(() => el.classList.remove('show'), 6000);
 }
 </script>
 </body>
