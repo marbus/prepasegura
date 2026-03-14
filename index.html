@@ -574,8 +574,10 @@ body::before {
         <select id="new-horas">
           <option value="12">12 horas</option>
           <option value="24">24 horas</option>
-          <option value="48">48 horas</option>
+          <option value="48" selected>48 horas</option>
+          <option value="72">3 días</option>
           <option value="120">5 días</option>
+          <option value="168">1 semana</option>
         </select>
       </div>
 
@@ -785,6 +787,9 @@ function renderCodigos(codigos) {
           ?`<button class="btn btn-danger" onclick="toggleCodigo('${c.codigo}','inactivo')">⛔ Desactivar</button>`
           :`<button class="btn btn-success" onclick="toggleCodigo('${c.codigo}','activo')">✅ Activar</button>`}
         ${c.tel_tutor?`<a href="https://wa.me/52${c.tel_tutor}" target="_blank"><button class="btn btn-success">📲 WA</button></a>`:''}
+        <button class="btn btn-ghost" onclick="extenderCodigo('${c.codigo}',1)" style="font-size:9px;padding:7px 10px;border-color:var(--cyan);color:var(--cyan);">+1h</button>
+        <button class="btn btn-ghost" onclick="extenderCodigo('${c.codigo}',24)" style="font-size:9px;padding:7px 10px;border-color:var(--cyan);color:var(--cyan);">+24h</button>
+        <button class="btn btn-ghost" onclick="extenderCodigo('${c.codigo}',48)" style="font-size:9px;padding:7px 10px;border-color:var(--cyan);color:var(--cyan);">+48h</button>
         <button class="btn btn-danger" onclick="borrarCodigo('${c.codigo}')" style="opacity:0.6;font-size:9px;">🗑 Borrar</button>      </div>
     </div>`;
   }).join('');
@@ -812,6 +817,21 @@ async function toggleCodigo(codigo,estado) {
 }
 
 // ══════════════ CREAR CÓDIGO ══════════════
+async function extenderCodigo(codigo, horas) {
+  try {
+    const data = await apiCall({action:'extender', codigo, horas});
+    if (data.ok) {
+      const nueva = new Date(data.nueva_expira);
+      toast(`${codigo} → +${horas}h · vence ${nueva.toLocaleString('es-MX',{weekday:'short',hour:'2-digit',minute:'2-digit'})}`, 'ok');
+      codigosCache = null;
+      cargarTodo();
+    } else {
+      toast('Error: ' + data.error, 'err');
+    }
+  } catch(e) { toast('Error: ' + e.message, 'err'); }
+}
+
+
 async function borrarCodigo(codigo) {
   // Paso 1: confirmar
   if (!confirm(`¿Seguro que quieres borrar "${codigo}"?\n\nEsta acción no se puede deshacer.`)) return;
