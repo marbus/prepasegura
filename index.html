@@ -507,7 +507,7 @@ async function validarCodigo() {
       E.tipo_acceso = res.tipo || 'simulacro';
       mostrarMsg(msg,'ok',`✅ Código válido — Bienvenido${res.alumno ? ', ' + res.alumno : ''}!`);
 
-      // Pre-llenar nombre si viene del código
+      // Pre-llenar campos si vienen del código
       if (res.alumno) {
         setTimeout(() => { document.getElementById('reg-alumno').value = res.alumno; }, 100);
       }
