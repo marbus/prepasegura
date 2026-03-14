@@ -373,7 +373,7 @@ textarea:focus{border-color:var(--oro);}
     <div class="card">
       <div class="score-big">
         <div class="score-num" id="res-score">—</div>
-        <div class="score-total">de 128 aciertos</div>
+        <div class="score-total" id="res-score-total">de 128 aciertos</div>
         <div style="margin-top:8px;font-size:13px;color:var(--gris);" id="res-tiempo"></div>
         <div style="margin-top:4px;font-size:12px;color:var(--oro);" id="res-dias"></div>
       </div>
@@ -915,7 +915,8 @@ function confirmarFinalizar() {
     if (!confirm(`Tienes ${pend} preguntas sin responder.\n¿Deseas finalizar de todas formas?\n\nNo hay penalización por respuesta incorrecta.`)) return;
   }
   clearInterval(E.timerInterval);
-  E.tiempoUsado = 10800 - E.segundosRestantes;
+  const tiempoMax = E.tipo_acceso === 'demo' ? 3600 : 10800;
+  E.tiempoUsado = tiempoMax - E.segundosRestantes;
   irFeedback();
 }
 
@@ -1134,10 +1135,14 @@ ${velocidadStr}Tiempo total: ${tiempoStr}
 // ============================================================
 function mostrarResultados(areas, total, tiempoStr, statusMeta, nivel, precio, precio_antes) {
   showScreen('s-resultados');
+  const esDemo = E.tipo_acceso === 'demo';
+  const totalMax = esDemo ? 25 : 128;
+  const tiempoMax = esDemo ? '1:00:00' : '3:00:00';
 
   document.getElementById('res-score').textContent = total;
+  document.getElementById('res-score-total').textContent = `de ${totalMax} aciertos${esDemo ? ' · DEMO' : ''}`;
   document.getElementById('res-sub').textContent = `${E.alumno} · ${E.plantel_nombre}`;
-  document.getElementById('res-tiempo').textContent = `⏱ Tiempo: ${tiempoStr} de 3:00:00`;
+  document.getElementById('res-tiempo').textContent = `⏱ Tiempo: ${tiempoStr} de ${tiempoMax}`;
   document.getElementById('res-dias').textContent = calcularDias();
 
   const colores = {
