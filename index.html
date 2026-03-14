@@ -145,9 +145,9 @@ textarea:focus{border-color:var(--oro);}
 <!-- MODAL CONFIRMACIÓN INICIO -->
 <div class="modal-overlay" id="modal-inicio">
   <div class="modal-box">
-    <div class="modal-titulo">⚠️ ¿Listo para comenzar?</div>
-    <div class="modal-txt">
-      Una vez que inicies el simulacro <strong style="color:var(--oro)">no podrás pausarlo</strong>.<br><br>
+    <div class="modal-titulo" id="modal-titulo">⚠️ ¿Listo para comenzar?</div>
+    <div class="modal-txt" id="modal-txt">
+      Una vez que inicies <strong style="color:var(--oro)">no podrás pausarlo</strong>.<br><br>
       Tienes <strong>3 horas exactas</strong> para responder 128 reactivos diagnósticos.<br><br>
       El examen real ECOEMS tiene 128 preguntas — este simulacro mide exactamente en qué materias estás bien y dónde necesitas refuerzo.<br><br>
       Asegúrate de estar en un lugar tranquilo con buena conexión a internet.
@@ -185,7 +185,7 @@ textarea:focus{border-color:var(--oro);}
         ¿No tienes código? Contacta a tu asesor por WhatsApp
       </div>
     </div>
-    <div style="text-align:center;font-size:10px;color:var(--gris);padding-bottom:20px;">
+    <div style="text-align:center;font-size:10px;color:var(--gris);padding-bottom:20px;" id="footer-tipo">
       Simulacro diagnóstico · 128 reactivos · 3 horas<br>
       Basado en temario ECOEMS 2026 · UNAM + IPN
     </div>
@@ -468,7 +468,7 @@ let E = {
   tiempoInicio:null, tiempoUsado:0,
   preguntaActual:0,
   timerInterval:null,
-  segundosRestantes:10800,
+  segundosRestantes: 10800, // se sobreescribe en confirmarInicio según tipo
   tiemposPorPregunta:{},
   tiempoUltimaPregunta:null
 };
@@ -572,6 +572,24 @@ function mostrarModalInicio() {
   E.grado   = grado;
   E.fecha_examen = document.getElementById('reg-fecha').value;
 
+  // Ajustar modal y footer según tipo
+  const esDemo = E.tipo_acceso === 'demo';
+  document.getElementById('modal-titulo').textContent = esDemo
+    ? '🔓 Vista previa — 25 preguntas'
+    : '⚠️ ¿Listo para comenzar?';
+  document.getElementById('modal-txt').innerHTML = esDemo
+    ? `Una vez que inicies <strong style="color:var(--oro)">no podrás pausarlo</strong>.<br><br>
+       Esta es una <strong>muestra de 25 preguntas</strong> — las más representativas del examen ECOEMS.<br><br>
+       Tendrás <strong>1 hora</strong> para responderlas. Son las 25 preguntas más complejas, distribuidas en todas las materias.<br><br>
+       Asegúrate de estar en un lugar tranquilo.`
+    : `Una vez que inicies <strong style="color:var(--oro)">no podrás pausarlo</strong>.<br><br>
+       Tienes <strong>3 horas exactas</strong> para responder 128 reactivos diagnósticos.<br><br>
+       El examen real ECOEMS tiene 128 preguntas — este simulacro mide exactamente en qué materias estás bien y dónde necesitas refuerzo.<br><br>
+       Asegúrate de estar en un lugar tranquilo con buena conexión a internet.`;
+  document.getElementById('footer-tipo').innerHTML = esDemo
+    ? `Vista previa diagnóstica · 25 preguntas · 1 hora<br>Basado en temario ECOEMS 2026 · UNAM + IPN`
+    : `Simulacro diagnóstico · 128 reactivos · 3 horas<br>Basado en temario ECOEMS 2026 · UNAM + IPN`;
+
   document.getElementById('modal-inicio').classList.add('show');
 }
 
@@ -610,8 +628,9 @@ async function confirmarInicio() {
     E.preguntasDemo = null;
   }
 
-  const lista = E.preguntasDemo || PREGUNTAS;
-  E.totalPreguntas = lista.length;
+  // Timer: 1 hora para demo, 3 horas para simulacro
+  E.segundosRestantes = E.tipo_acceso === 'demo' ? 3600 : 10800;
+  document.getElementById('timer-display').textContent = E.tipo_acceso === 'demo' ? '1:00:00' : '3:00:00';
 
   document.getElementById('hdr-nombre').textContent = E.alumno.split(' ')[0];
   document.getElementById('hdr-meta').textContent = `Meta: ${E.plantel_nombre}${esDemo?' · DEMO':''}`;
